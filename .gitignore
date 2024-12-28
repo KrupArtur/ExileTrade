@@ -5,3 +5,4 @@
 # Ignorowanie katalogu wynikowego
 /out/
 /target/
+tempFilePath.txt
