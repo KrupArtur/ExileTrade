@@ -1,7 +1,7 @@
-package com.example.demo1.Controller;
+package com.demo.poe.Controller;
 
-import com.example.demo1.View.ViewFactory;
-import com.example.demo1.PoeTradeManager;
+import com.demo.poe.PoeTradeManager;
+import com.demo.poe.View.ViewFactory;
 import javafx.stage.Stage;
 
 public abstract class BaseController {

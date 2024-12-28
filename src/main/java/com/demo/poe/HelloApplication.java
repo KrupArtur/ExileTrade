@@ -1,8 +1,8 @@
-package com.example.demo1;
+package com.demo.poe;
 
-import com.example.demo1.Model.Json.StaticData;
-import com.example.demo1.Service.SettingsManager;
-import com.example.demo1.View.ViewFactory;
+import com.demo.poe.Model.Json.StaticData;
+import com.demo.poe.Service.SettingsManager;
+import com.demo.poe.View.ViewFactory;
 import javafx.application.Application;
 import javafx.application.Platform;
 

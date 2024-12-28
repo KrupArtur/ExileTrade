@@ -1,5 +1,5 @@
-package com.example.demo1.Model.Json;
-import com.example.demo1.Service.TempFile;
+package com.demo.poe.Model.Json;
+import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

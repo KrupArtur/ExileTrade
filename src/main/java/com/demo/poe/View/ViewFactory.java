@@ -1,12 +1,12 @@
-package com.example.demo1.View;
+package com.demo.poe.View;
 
-import com.example.demo1.Controller.MainWindowController;
-import com.example.demo1.Controller.OptionsWindowController;
-import com.example.demo1.Events.KeyEventHandler;
-import com.example.demo1.HelloApplication;
-import com.example.demo1.Service.SettingsManager;
-import com.example.demo1.Controller.BaseController;
-import com.example.demo1.PoeTradeManager;
+import com.demo.poe.Controller.OptionsWindowController;
+import com.demo.poe.Events.KeyEventHandler;
+import com.demo.poe.HelloApplication;
+import com.demo.poe.PoeTradeManager;
+import com.demo.poe.Service.SettingsManager;
+import com.demo.poe.Controller.MainWindowController;
+import com.demo.poe.Controller.BaseController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

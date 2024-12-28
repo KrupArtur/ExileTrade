@@ -1,17 +1,17 @@
-package com.example.demo1.Controller;
+package com.demo.poe.Controller;
 
-import com.example.demo1.Model.Json.Entry;
-import com.example.demo1.Model.Json.StaticData;
-import com.example.demo1.Service.ClipboardContent;
-import com.example.demo1.Service.SettingsManager;
-import com.example.demo1.Service.WindowDetector;
-import com.example.demo1.HelloApplication;
-import com.example.demo1.Model.Json.ItemDetails;
-import com.example.demo1.Model.Json.ResultForQuery;
-import com.example.demo1.Model.Mod;
-import com.example.demo1.PoeTradeManager;
-import com.example.demo1.Service.ParserData;
-import com.example.demo1.View.ViewFactory;
+import com.demo.poe.HelloApplication;
+import com.demo.poe.Model.Json.Entry;
+import com.demo.poe.Model.Json.ItemDetails;
+import com.demo.poe.Model.Json.ResultForQuery;
+import com.demo.poe.Model.Json.StaticData;
+import com.demo.poe.Model.Mod;
+import com.demo.poe.PoeTradeManager;
+import com.demo.poe.Service.ClipboardContent;
+import com.demo.poe.Service.ParserData;
+import com.demo.poe.Service.SettingsManager;
+import com.demo.poe.Service.WindowDetector;
+import com.demo.poe.View.ViewFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,7 +122,7 @@ public class MainWindowController extends BaseController {
 
         if (verticalScrollBar != null) {
             verticalScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue.doubleValue() == 1.0) {
+                if (newValue.doubleValue() == 1.0 && ResultForQuery.getInstance().getResult().size() > 9) {
                     fetchItems();
                 }
             });
@@ -151,21 +151,19 @@ public class MainWindowController extends BaseController {
             double newX = mouseEvent.getScreenX() - xOffset;
             double newY = mouseEvent.getScreenY() - yOffset;
 
-            // Ograniczenie przesuwania do granic okna gry
             if (newX < gameWindowRect.left) {
-                newX = gameWindowRect.left; // Lewa granica
+                newX = gameWindowRect.left;
             }
             if (newX + stage.getWidth() > gameWindowRect.right) {
-                newX = gameWindowRect.right - stage.getWidth(); // Prawa granica
+                newX = gameWindowRect.right - stage.getWidth();
             }
             if (newY < gameWindowRect.top) {
-                newY = gameWindowRect.top; // Górna granica
+                newY = gameWindowRect.top;
             }
             if (newY + stage.getHeight() > gameWindowRect.bottom) {
-                newY = gameWindowRect.bottom - stage.getHeight(); // Dolna granica
+                newY = gameWindowRect.bottom - stage.getHeight();
             }
 
-            // Ustaw nową pozycję okna
             stage.setX(newX);
             stage.setY(newY);
         }
@@ -177,7 +175,7 @@ public class MainWindowController extends BaseController {
         if (gameWindowRect != null) {
             xOffset = mouseEvent.getSceneX();
             yOffset = mouseEvent.getSceneY();
-            this.gameWindowRect = gameWindowRect; // Zapisz granice okna gry
+            this.gameWindowRect = gameWindowRect;
         }
     }
 
@@ -287,48 +285,48 @@ public class MainWindowController extends BaseController {
 
     private void copyToClipboard() {
         try {
-
             String clipboardContent = ClipboardContent.getClipboardContent();
             Map<String, String> item = ParserData.parseItemData(clipboardContent);
-            if (item.size() == 0) return;
+
+            assert item != null;
+            assert item.size() != 0;
+
             String json = createQuery(item);
 
+            String url = TRADE_API_BASE_URL + "search/Standard";
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://www.pathofexile.com/api/trade2/search/Standard"))
+                    .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            CompletableFuture<HttpResponse<String>> futureResponse = CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-            CompletableFuture<Void> result = futureResponse
+            CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(response -> {
-
-                        String remaining = response.headers()
+                        System.out.println("Remaining rate limit: " + response.headers()
                                 .firstValue("x-rate-limit-rules")
-                                .orElse("Unknown");
+                                .orElse("Unknown"));
 
-                        System.out.println("Remaining rate limit: " + remaining);
+                        System.out.println("limit per ip:" +  response.headers()
+                                .firstValue("x-rate-limit-" + response.headers()
+                                        .firstValue("x-rate-limit-rules")
+                                        .orElse("Unknown"))
+                                .orElse("Unknown"));
 
-                        String limitIP = response.headers()
-                                .firstValue("x-rate-limit-" + remaining)
-                                .orElse("Unknown");
-                        System.out.println("limit per ip:" + limitIP);
+                        System.out.println("limit per ip:" +  response.headers()
+                                .firstValue("x-rate-limit-" + response.headers()
+                                        .firstValue("x-rate-limit-rules")
+                                        .orElse("Unknown") + "-state")
+                                .orElse("Unknown"));
 
-                        String limitIPState = response.headers()
-                                .firstValue("x-rate-limit-" + remaining + "-state")
-                                .orElse("Unknown");
-                        System.out.println("limit per ip:" + limitIPState);
-
-                        return response.body(); // Przekazanie ciała dalej
+                        return response.body();
                     })
                     .thenAcceptAsync(ResultForQuery::loadDataFromRequest)
-                    .exceptionally(e -> {
-                        System.err.println(e);
-                        return null;
-                    });
-            result.join();
-            resultNotFound.setText(String.valueOf(ResultForQuery.getInstance().getResult().size()));
+                    .join();
+
+
+           // resultNotFound.setText(String.valueOf(ResultForQuery.getInstance().getResult().size()));
         } catch (Exception e) {
             e.printStackTrace();
         }

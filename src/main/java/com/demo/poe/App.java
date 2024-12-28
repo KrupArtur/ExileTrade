@@ -1,4 +1,4 @@
-package com.example.demo1;
+package com.demo.poe;
 
 public class App {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.example.demo1.Model;
+package com.demo.poe.Model;
 
 public class Mod {
     String id;

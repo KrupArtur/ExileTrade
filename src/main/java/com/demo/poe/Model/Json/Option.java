@@ -1,4 +1,4 @@
-package com.example.demo1.Model.Json;
+package com.demo.poe.Model.Json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

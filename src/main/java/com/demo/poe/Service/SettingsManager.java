@@ -1,6 +1,6 @@
-package com.example.demo1.Service;
+package com.demo.poe.Service;
 
-import com.example.demo1.HelloApplication;
+import com.demo.poe.HelloApplication;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class SettingsManager {
     private static SettingsManager instance;
     private JsonNode settingsNode;
-    private final String settingsFile = "com/example/demo1/config/settings.json";
+    private final String settingsFile = "com/demo/poe/config/settings.json";
 
     public SettingsManager() {
         loadSettings();

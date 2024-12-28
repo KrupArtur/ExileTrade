@@ -1,6 +1,6 @@
-package com.example.demo1;
+package com.demo.poe;
 
-import com.example.demo1.Service.WindowDetector;
+import com.demo.poe.Service.WindowDetector;
 import com.sun.jna.platform.win32.WinDef;
 
 public class PoeTradeManager {
