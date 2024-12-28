@@ -1,9 +1,6 @@
 package com.demo.poe.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +27,20 @@ public class ParserData {
             i++;
             if(i == lines.length - 1 ) li.add(myList);
         }
-        if(li.size() == 0) return null;
+      if(li.size() == 0) return null;
         itemDetails.put("Mods",String.join("\n", li.get(li.size() -1)));
         return itemDetails;
+    }
+
+    public static String findMod(String itemData, String mod){
+       List<String> allData = Arrays.stream(itemData.split("\\n")).toList();
+       String text = allData.stream().filter(x -> x.contains(mod)).findAny().orElse("").replace(mod, "");
+       Pattern pattern =  Pattern.compile("\\d*");
+       Matcher matcher = pattern.matcher(text);
+       while(matcher.find()){
+           return matcher.group();
+       }
+       return "";
     }
 
     private static String parseRequirements(String[] lines, int currentLine) {

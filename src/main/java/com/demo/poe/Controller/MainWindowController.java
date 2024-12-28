@@ -41,7 +41,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -60,10 +59,10 @@ public class MainWindowController extends BaseController {
     private Stage stage;
 
     @FXML
-    private CheckBox allowMod;
+    private TextField itemLevelField;
 
     @FXML
-    private CheckBox exactMod;
+    private TextField itemQualityField;
 
     @FXML
     private Button searchBtn;
@@ -102,19 +101,6 @@ public class MainWindowController extends BaseController {
         lvl.setCellValueFactory(new PropertyValueFactory<>("level"));
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        allowMod.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                exactMod.setSelected(false);
-            }
-        });
-
-        exactMod.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                allowMod.setSelected(false);
-            }
-        });
-        ;
-
         iconApplication.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("icon32")))));
         titleApplicationLabel.setText(SettingsManager.getInstance().getSetting("title"));
 
@@ -127,6 +113,32 @@ public class MainWindowController extends BaseController {
                 }
             });
         }
+
+        itemLevelField.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(newValue.length() < 3) {
+                if (!newValue.matches("\\d*")) {
+                    itemLevelField.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            } else {
+                itemLevelField.setText(oldValue);
+            }
+        });
+        itemQualityField.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(newValue.length() < 2) {
+                if (!newValue.matches("\\d*")) {
+                    itemQualityField.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            } else {
+                try {
+                    int value = Integer.parseInt(newValue);
+                    if (value > 20) {
+                        itemQualityField.setText("20");
+                    }
+                } catch (NumberFormatException e) {
+                    itemQualityField.setText("");
+                }
+            }
+        });
     }
 
     @FXML
@@ -418,18 +430,22 @@ public class MainWindowController extends BaseController {
 
     public boolean findModInVBox(String text) {
         for (var node : mods.getChildren()) {
-            HBox hbox = (HBox) node;
-            boolean checkBoxIsSelect = false;
-            boolean correctMod = false;
-            for (var element : hbox.getChildren()) {
-                if (element instanceof CheckBox checkBox) {
-                    checkBoxIsSelect = checkBox.isSelected();
-                }
-                if (element instanceof Label mod) {
-                    if (mod.getText().equals(text)) correctMod = true;
-                }
+            if (node instanceof HBox hbox) {
+                boolean checkBoxIsSelect = false;
+                boolean correctMod = false;
+                for (var element : hbox.getChildren()) {
+                    if (element instanceof CheckBox checkBox) {
+                        checkBoxIsSelect = checkBox.isSelected();
+                    }
+                    if (element instanceof Label mod) {
+                        if (mod.getText().equals(text)) correctMod = true;
+                    }
+                    if (element instanceof ComboBox comboBox) {
+                        if (comboBox.getValue().equals(text)) correctMod = true;
+                    }
 
-                if (checkBoxIsSelect && correctMod) return true;
+                    if (checkBoxIsSelect && correctMod) return true;
+                }
             }
         }
         return false;
@@ -438,7 +454,10 @@ public class MainWindowController extends BaseController {
 
     public void addMods(VBox vbox) {
         if (!vbox.getChildren().isEmpty()) vbox.getChildren().clear();
-        Map<String, String> itemData = ParserData.parseItemData(ClipboardContent.getClipboardContent());
+        String data = ClipboardContent.getClipboardContent();
+        Map<String, String> itemData = ParserData.parseItemData(data);
+        itemLevelField.setText(ParserData.findMod(data, "Item Level: "));
+        itemQualityField.setText(ParserData.findMod(data, "Quality: +"));
         if(itemData != null) {
             for (String text : itemData.get("Mods").split("\n")) {
                 vbox.getChildren().add(cretaeHBox(text));
@@ -473,9 +492,27 @@ public class MainWindowController extends BaseController {
         Label mod = new Label(ParserData.replaceNumberToHash(text));
         mod.setStyle("-fx-text-fill: #f1c40f; -fx-font-size: 11px;");
         TextField minField = new TextField();
+        minField.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(newValue.length() < 4) {
+                if (!newValue.matches("\\d*")) {
+                    minField.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            } else {
+                minField.setText(oldValue);
+            }
+        });
         minField.setPromptText("MIN");
         minField.setStyle("-fx-pref-width: 50px; -fx-min-width: 50px;");
         TextField maxField = new TextField();
+        maxField.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(newValue.length() < 4) {
+                if (!newValue.matches("\\d*")) {
+                    maxField.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            } else {
+                maxField.setText(oldValue);
+            }
+        });
         maxField.setPromptText("MAX");
         maxField.setStyle("-fx-pref-width: 50px; -fx-min-width: 50px;");
         List<String> minAndMax = ParserData.getNumberFromText(text);
@@ -499,11 +536,11 @@ public class MainWindowController extends BaseController {
     }
 
     private String exactOrAllowMod(int value){
-        if(allowMod.isSelected()){
+       /* if(allowMod.isSelected()){
             return String.valueOf((int)(value * 0.9));
-        } else {
+        } else {*/
             return String.valueOf(value);
-        }
+
     }
 
 }
