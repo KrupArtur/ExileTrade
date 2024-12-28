@@ -1,0 +1,7 @@
+# Ignorowanie katalogu konfiguracyjnego IntelliJ
+.idea/
+# Ignorowanie plików .log
+*.log
+# Ignorowanie katalogu wynikowego
+/out/
+/target/

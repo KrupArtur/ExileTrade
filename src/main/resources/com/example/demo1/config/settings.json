@@ -1,0 +1,8 @@
+{
+  "app": {
+    "icon": "icon/icon.png",
+    "icon16": "icon/icon16.png",
+    "icon32": "icon/icon32.png",
+    "title": "ExileTrader"
+  }
+}

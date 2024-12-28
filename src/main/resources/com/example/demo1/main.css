@@ -1,0 +1,168 @@
+/* Stylizacja aplikacji w stylu ikony */
+
+.root {
+    -fx-background-color: linear-gradient(to bottom, #1c1c1c, #0f0f0f); /* Gradient ciemnego tła */
+    -fx-font-family: "Verdana", sans-serif;
+    -fx-font-size: 14px;
+    -fx-base: #2c2c2c; /* Dostosowane odcienie tła */
+    -fx-text-fill: #e4e4e4; /* Jasny kolor tekstu */
+}
+
+/* Nagłówki */
+.label, .text {
+    -fx-text-fill: linear-gradient(to bottom, #f1c40f, #e67e22); /* Złoty gradient tekstu */
+}
+
+.header {
+    -fx-font-size: 24px;
+    -fx-text-fill: #f39c12; /* Złoty kolor dla nagłówków */
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(243, 156, 18, 0.8), 5, 0, 2, 2);
+}
+
+/* Tabela - kolumny */
+.table-view {
+    -fx-background-color: #232323; /* Ciemniejsze tło tabeli */
+    -fx-border-color: linear-gradient(to right, #34495e, #2c3e50); /* Gradient obramowania */
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 5, 0, 2, 2);
+}
+
+.table-column {
+    -fx-text-fill: #ecf0f1; /* Kolor tekstu w tabeli */
+    -fx-font-size: 14px;
+}
+
+.table-cell {
+    -fx-background-color: #2c3e50; /* Ciemniejszy kolor komórek tabeli */
+    -fx-border-color: #34495e; /* Ciemniejsze obramowanie */
+    -fx-border-width: 1;
+    -fx-text-fill: #bdc3c7; /* Jasny tekst w komórkach */
+}
+
+.table-cell:selected {
+    -fx-background-color: linear-gradient(to right, #16a085, #1abc9c); /* Gradient dla wybranych komórek */
+    -fx-text-fill: white;
+}
+
+.table-row {
+    -fx-background-color: #2c3e50; /* Ciemniejsze tło dla wierszy */
+    -fx-border-color: #34495e; /* Ciemne obramowanie wierszy */
+    -fx-border-width: 1;
+    -fx-text-fill: #bdc3c7; /* Jasny kolor tekstu */
+}
+.table-row:hover {
+    -fx-background-color: linear-gradient(to right, #34495e, #2c3e50); /* Subtelny efekt hover w wierszach */
+}
+
+/* Przyciski */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #27ae60, #1e8449); /* Zielony gradient dla przycisków */
+    -fx-text-fill: white;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.5), 5, 0, 2, 2);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #2ecc71, #28b463); /* Jaśniejszy zielony przy hover */
+}
+
+.button:pressed {
+    -fx-background-color: #16a085; /* Ciemniejszy zielony po kliknięciu */
+}
+
+/* Menu i paski */
+.menu-bar {
+    -fx-background-color: #2c3e50; /* Tło dla menu */
+    -fx-border-color: #34495e;
+    -fx-border-width: 1;
+}
+
+.menu-item {
+    -fx-text-fill: #ecf0f1;
+    -fx-padding: 10px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #34495e;
+}
+
+/* Panele */
+.panel {
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #1c2833); /* Gradient tła panelu */
+    -fx-border-radius: 10px;
+    -fx-padding: 15px;
+}
+
+.panel-header {
+    -fx-text-fill: #f39c12; /* Złoty kolor dla nagłówka panelu */
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Scrollpane */
+.scroll-pane {
+    -fx-background-color: #232323;
+    -fx-border-color: #34495e;
+    -fx-border-width: 2;
+}
+
+.scroll-bar {
+    -fx-background-color: #34495e;
+    -fx-background-radius: 5px;
+}
+
+/* Pola tekstowe */
+.text-field, .text-area {
+    -fx-background-color: #2e2e2e;
+    -fx-text-fill: #ecf0f1;
+    -fx-prompt-text-fill: #7f8c8d; /* Kolor podpowiedzi */
+    -fx-border-color: linear-gradient(to right, #34495e, #2c3e50);
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .text-area:focused {
+    -fx-border-color: linear-gradient(to right, #16a085, #1abc9c); /* Gradient obramowania w fokusie */
+}
+
+/* Paski postępu */
+.progress-bar {
+    -fx-accent: #e74c3c; /* Czerwony kolor dla paska postępu */
+    -fx-background-color: #34495e;
+}
+
+/* Ikony */
+.image-view {
+    -fx-fit-height: 32px;
+    -fx-fit-width: 32px;
+    -fx-background-color: transparent;
+}
+
+/* Specyficzne elementy */
+#exitBtn {
+    -fx-background-color: #27ae60; /* Zielony dla przycisków */
+    -fx-text-fill: white;
+    -fx-padding: 5px 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 14px;
+}
+
+#iconApplication {
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+}
+
+#titleApplicationLabel {
+    -fx-text-fill: #f1c40f;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+#titleBar {
+    -fx-background-color: linear-gradient(to right, #2c3e50, #34495e);
+    -fx-border-color: #34495e;
+    -fx-border-width: 1;
+}
