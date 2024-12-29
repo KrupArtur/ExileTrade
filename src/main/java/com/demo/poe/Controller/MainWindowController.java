@@ -205,6 +205,9 @@ public class MainWindowController extends BaseController {
 
     @FXML
     void reloadData(ScrollEvent event) {
+        ResultForQuery response = ResultForQuery.getInstance();
+        if (response == null || response.getResult() == null) return;
+        if( response.getResult().size() == table.getItems().size()) return;
         fetchItems();
     }
 
@@ -258,7 +261,7 @@ public class MainWindowController extends BaseController {
         int endIndex = table.getItems().size() == 0
                 ? limit
                 : ((table.getItems().size() / limit) + 1) * limit;
-        if (endIndex > 18) return "";
+        if (endIndex > 18 || response.getResult().size() == table.getItems().size()) return "";
         return String.join(",", response.getResult().subList(startIndex, endIndex));
     }
 
