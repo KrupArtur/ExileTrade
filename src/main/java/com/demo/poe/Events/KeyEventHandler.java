@@ -1,13 +1,14 @@
 package com.demo.poe.Events;
 
-import com.demo.poe.Model.Json.Entry;
-import com.demo.poe.Model.Json.StaticData;
+import com.demo.poe.Model.Json.Stats.StaticData;
 import com.demo.poe.Service.ClipboardContent;
 import com.demo.poe.Service.WindowDetector;
 import com.demo.poe.Controller.MainWindowController;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -18,13 +19,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -89,20 +88,21 @@ public class KeyEventHandler implements NativeKeyListener {
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-        if (!isWindowVisible && nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_C && isCtrlPressed(nativeKeyEvent)) {
-            Platform.runLater(this::toggleWindowVisibility);
-        } else if( !isWindowVisible &&  nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_D && isCtrlPressed(nativeKeyEvent)) {
-            try {
-                Robot robot = new Robot();
-                robot.keyPress(KeyEvent.VK_CONTROL);
-                robot.keyPress(KeyEvent.VK_C);
-                robot.delay(10);
-                robot.keyRelease(KeyEvent.VK_C);
-                robot.keyRelease(KeyEvent.VK_CONTROL);
-            } catch (AWTException e) {
-                e.printStackTrace();
+        if(WindowDetector.isPoEActive()) {
+            if (!isWindowVisible && nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_C && isCtrlPressed(nativeKeyEvent)) {
+                Platform.runLater(this::toggleWindowVisibility);
+            } else if (!isWindowVisible && nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_D && isCtrlPressed(nativeKeyEvent)) {
+                try {
+                    Robot robot = new Robot();
+                    robot.keyPress(KeyEvent.VK_CONTROL);
+                    robot.keyPress(KeyEvent.VK_C);
+                    robot.delay(10);
+                    robot.keyRelease(KeyEvent.VK_C);
+                    robot.keyRelease(KeyEvent.VK_CONTROL);
+                } catch (AWTException e) {
+                    e.printStackTrace();
+                }
             }
-
         }
     }
 
@@ -205,29 +205,36 @@ public class KeyEventHandler implements NativeKeyListener {
             var ref = new Object() {
                 boolean isc = false;
             };
-            combobox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-                if(ref.isc) return;
-                if(!combobox.isShowing()) combobox.hide();
-                ObservableList<String> filteredItems = FXCollections.observableArrayList();
-                for (String item : texts) {
-                    if (item.toLowerCase().contains(newValue.toLowerCase())) {
-                        filteredItems.add(item);
+            final ChangeListener<String> listener = new ChangeListener<>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    if (ref.isc) return;
+                    if (!combobox.isShowing()) combobox.hide();
+                    ObservableList<String> filteredItems = FXCollections.observableArrayList();
+                    for (String item : texts) {
+                        if (item.toLowerCase().contains(newValue.toLowerCase())) {
+                            filteredItems.add(item);
+                        }
+                    }
+                    if (!filteredItems.isEmpty()) {
+                        ref.isc = true;
+                        combobox.setItems(filteredItems);
+                        ref.isc = false;
+                        combobox.show();
+                    } else {
+                        combobox.hide();
+                    }
+                    if (!ref.isc) {
+                        combobox.getEditor().textProperty().removeListener(this);
+                        combobox.getEditor().setText(newValue);
+                        combobox.getEditor().end();
+                        combobox.getEditor().textProperty().addListener(this);
+                        combobox.setEditable(true);
                     }
                 }
-                if (!filteredItems.isEmpty()) {
-                    ref.isc = true;
-                    combobox.setItems(filteredItems);
-                    ref.isc = false;
-                    combobox.show();
-                } else {
-                    combobox.hide();
-                }
-                if(!ref.isc) {
-                    combobox.getEditor().setText(newValue);
-                    combobox.getEditor().end();
-                    combobox.setEditable(true);
-                }
-            });
+            };
+
+            combobox.getEditor().textProperty().addListener(listener);
 
             combobox.setOnKeyPressed(event -> handleKeyPressed(event, combobox));
 

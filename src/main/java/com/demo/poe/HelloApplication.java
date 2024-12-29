@@ -1,6 +1,7 @@
 package com.demo.poe;
 
-import com.demo.poe.Model.Json.StaticData;
+import com.demo.poe.Model.Json.Filters.FilterResponse;
+import com.demo.poe.Model.Json.Stats.StaticData;
 import com.demo.poe.Service.SettingsManager;
 import com.demo.poe.View.ViewFactory;
 import javafx.application.Application;
@@ -9,6 +10,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import com.dustinredmond.fxtrayicon.*;
 
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,12 +21,12 @@ public class HelloApplication extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) throws URISyntaxException {
         Logger logger = Logger.getLogger(org.jnativehook.GlobalScreen.class.getPackage().getName());
         logger.setLevel(Level.SEVERE);
 
         StaticData.createInstance();
-
+        FilterResponse.createInstance();
         ViewFactory viewFactory = new ViewFactory(new PoeTradeManager());
         viewFactory.showMainWindow();
 

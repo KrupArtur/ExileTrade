@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json;
+package com.demo.poe.Model.Json.Stats;
 
 public class Entry {
     private String id;

@@ -62,7 +62,7 @@
                               <Insets left="2.0" right="10.0" />
                            </HBox.margin>
                         </TextField>
-                        <CheckBox mnemonicParsing="false" text="Corrupted" />
+                        <CheckBox fx:id="isCorrupted" mnemonicParsing="false" text="Corrupted" />
                      </children>
                      <VBox.margin>
                         <Insets right="5.0" />
@@ -72,7 +72,28 @@
             </VBox>
             <VBox fx:id="mods" prefHeight="337.0" prefWidth="386.0" />
             <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#search" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-border-radius: 5px; -fx-font-size: 14px;" text="Search" />
-            <Label fx:id="resultNotFound" />
+            <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="386.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="414.0">
+                     <children>
+                        <Label fx:id="resultNotFound">
+                           <font>
+                              <Font size="11.5" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#openPoeTrade" prefHeight="38.0" prefWidth="85.0" text="Trade" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
             <TableView fx:id="table" editable="true" focusTraversable="false" onScroll="#reloadData" prefHeight="248.0" prefWidth="386.0" stylesheets="@main.css">
               <columns>
                 <TableColumn fx:id="price" prefWidth="165.0" style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px;" text="Price" />

@@ -1,16 +1,13 @@
 package com.demo.poe.Controller;
 
 import com.demo.poe.HelloApplication;
-import com.demo.poe.Model.Json.Entry;
-import com.demo.poe.Model.Json.ItemDetails;
+import com.demo.poe.Model.Json.Stats.Entry;
+import com.demo.poe.Model.ItemDetails;
 import com.demo.poe.Model.Json.ResultForQuery;
-import com.demo.poe.Model.Json.StaticData;
+import com.demo.poe.Model.Json.Stats.StaticData;
 import com.demo.poe.Model.Mod;
 import com.demo.poe.PoeTradeManager;
-import com.demo.poe.Service.ClipboardContent;
-import com.demo.poe.Service.ParserData;
-import com.demo.poe.Service.SettingsManager;
-import com.demo.poe.Service.WindowDetector;
+import com.demo.poe.Service.*;
 import com.demo.poe.View.ViewFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,6 +54,9 @@ public class MainWindowController extends BaseController {
     private static final int MAXRESULTRESPONS = 9;
     private WinDef.RECT gameWindowRect;
     private Stage stage;
+
+    @FXML
+    private CheckBox isCorrupted;
 
     @FXML
     private TextField itemLevelField;
@@ -124,19 +124,12 @@ public class MainWindowController extends BaseController {
             }
         });
         itemQualityField.textProperty().addListener((observable, oldValue, newValue) ->{
-            if(newValue.length() < 2) {
+            if(newValue.length() < 3) {
                 if (!newValue.matches("\\d*")) {
                     itemQualityField.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             } else {
-                try {
-                    int value = Integer.parseInt(newValue);
-                    if (value > 20) {
-                        itemQualityField.setText("20");
-                    }
-                } catch (NumberFormatException e) {
-                    itemQualityField.setText("");
-                }
+                itemQualityField.setText(oldValue);
             }
         });
     }
@@ -236,7 +229,7 @@ public class MainWindowController extends BaseController {
 
     private void fetchItems() {
         ResultForQuery response = ResultForQuery.getInstance();
-        if (response == null && response.getResult() != null) return;
+        if (response == null || response.getResult() == null) return;
 
         String itemsCode = generateItemsCode(response);
         if (itemsCode.isEmpty()) return;
@@ -245,12 +238,21 @@ public class MainWindowController extends BaseController {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
+                .header("User-Agent", "ExileTrader/0.1")
                 .GET()
                 .build();
 
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
+                .thenApply(this::getBodyWithLimit)
                 .thenAcceptAsync(this::processFetchResponse)
+                .exceptionally(e -> {
+                    Pattern pattern = Pattern.compile("\\d*");
+                    Matcher matcher = pattern.matcher(e.getMessage());
+                    while(matcher.find()){
+                        resultNotFound.setText("X-Rate-Limit " + matcher.group());
+                    }
+                    return null;
+                })
                 .join();
     }
 
@@ -315,33 +317,48 @@ public class MainWindowController extends BaseController {
                     .build();
 
             CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(response -> {
-                        System.out.println("Remaining rate limit: " + response.headers()
-                                .firstValue("x-rate-limit-rules")
-                                .orElse("Unknown"));
-
-                        System.out.println("limit per ip:" +  response.headers()
-                                .firstValue("x-rate-limit-" + response.headers()
-                                        .firstValue("x-rate-limit-rules")
-                                        .orElse("Unknown"))
-                                .orElse("Unknown"));
-
-                        System.out.println("limit per ip:" +  response.headers()
-                                .firstValue("x-rate-limit-" + response.headers()
-                                        .firstValue("x-rate-limit-rules")
-                                        .orElse("Unknown") + "-state")
-                                .orElse("Unknown"));
-
-                        return response.body();
-                    })
+                    .thenApply(this::getBodyWithLimit)
                     .thenAcceptAsync(ResultForQuery::loadDataFromRequest)
                     .join();
-
 
            // resultNotFound.setText(String.valueOf(ResultForQuery.getInstance().getResult().size()));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getBodyWithLimit(HttpResponse response) {
+        System.out.println("Remaining rate limit: " + response.headers()
+                .firstValue("x-rate-limit-rules")
+                .orElse("Unknown"));
+
+        System.out.println("Remaining rate limit: " + response.headers()
+                .firstValue("X-RateLimit-Reset")
+                .orElse("Unknown"));
+
+        System.out.println("limit per ip:" +  response.headers()
+                .firstValue("x-rate-limit-" + response.headers()
+                        .firstValue("x-rate-limit-rules")
+                        .orElse("Unknown"))
+                .orElse("Unknown"));
+
+        System.out.println("limit per ip:" +  response.headers()
+                .firstValue("x-rate-limit-" + response.headers()
+                        .firstValue("x-rate-limit-rules")
+                        .orElse("Unknown") + "-state")
+                .orElse("Unknown"));
+        String responseBody = String.valueOf(response.body());
+
+        if(response.statusCode() == 429){
+            RateLimitHandler rateLimitHandler = new RateLimitHandler(resultNotFound);
+            rateLimitHandler.handleRateLimitExceeded(Integer.parseInt(response.headers()
+                    .firstValue("Retry-After")
+                    .orElse("0")));
+            return "";
+        } else if (response.statusCode() == 200) {
+            return responseBody;
+        }
+        return "";
     }
 
     public String createQuery(Map<String, String> item) {
@@ -369,7 +386,41 @@ public class MainWindowController extends BaseController {
             if (i < modsWithId.size() - 1) query.append(",");
         }
 
-        query.append("]}]},\"sort\":{\"price\":\"asc\"}}");
+        boolean isItemLevelOrQualityOrCorrupted = false;
+        if((itemLevelField.getText() != null && !itemLevelField.getText().isEmpty()) ||
+                (itemQualityField.getText() != null && !itemQualityField.getText().isEmpty())) {
+            isItemLevelOrQualityOrCorrupted = true;
+            query.append("]}], \"filters\": { \"type_filters\": { \"filters\": {");
+            if(!itemLevelField.getText().isEmpty()){
+                query.append("\"ilvl\": { \"min\": ") .append(itemLevelField.getText()).append("}");
+
+            }
+            if (!itemQualityField.getText().isEmpty()){
+                if(query.toString().contains("\"ilvl\"")) query.append(",");
+                if(!itemQualityField.getText().isEmpty()) {
+                    query.append("\"quality\": { \"min\": ").append(itemQualityField.getText()).append("}");
+                }
+            }
+
+            if(isCorrupted.isSelected())
+                query.append("}},");
+            else
+                query.append("}}}},");
+
+        }
+
+        if(isCorrupted.isSelected()){
+            isItemLevelOrQualityOrCorrupted = true;
+            query.append("\"misc_filters\":{\"disabled\":false,\"filters\":{\"corrupted\":{\"option\":\"")
+                    .append(isCorrupted.isSelected()).append("\"");
+            query.append("}}}}},");
+        }
+        if(!isItemLevelOrQualityOrCorrupted){
+            query.append("]}]},");
+        }
+
+        query.append("\"sort\":{\"price\":\"asc\"}}");
+
         return query.toString();
     }
 
@@ -541,6 +592,31 @@ public class MainWindowController extends BaseController {
         } else {*/
             return String.valueOf(value);
 
+    }
+
+    @FXML
+    void openPoeTrade(ActionEvent event) {
+        String clipboardContent = ClipboardContent.getClipboardContent();
+        Map<String, String> item = ParserData.parseItemData(clipboardContent);
+
+        assert item != null;
+        assert item.size() != 0;
+
+        String json = createQuery(item);
+        openWebPage("https://www.pathofexile.com/trade2/search/poe2/Standard?q=" + URLEncoderE.encodeUrlFragment(json));
+    }
+
+    private void openWebPage(String url) {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                URI uri = new URI(url);
+                desktop.browse(uri);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Nie udało się otworzyć strony.");
+        }
     }
 
 }

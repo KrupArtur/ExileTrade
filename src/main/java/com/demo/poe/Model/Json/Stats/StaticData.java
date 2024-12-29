@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json;
+package com.demo.poe.Model.Json.Stats;
 import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class StaticData {
     private static StaticData instance;
+    private static final String nameFileTemp = "staticDataTemp.json";
 
     @JsonProperty("result")
     private List<StaticDataResult> results;
@@ -23,7 +24,7 @@ public class StaticData {
     public static StaticData getInstance() {
         if (instance == null) {
             instance = new StaticData();
-            if(!TempFile.fileTempExists()){
+            if(!TempFile.fileTempExists(nameFileTemp)){
                 loadDataFromRequest();
             } else {
                 loadDataFromTempFile();
@@ -36,7 +37,7 @@ public class StaticData {
     public static void createInstance(){
         if (instance == null) {
             instance = new StaticData();
-            if(!TempFile.fileTempExists()){
+            if(!TempFile.fileTempExists(nameFileTemp)){
                 loadDataFromRequest();
             } else {
                 loadDataFromTempFile();
@@ -58,7 +59,7 @@ public class StaticData {
                         try {
                             ObjectMapper mapper = new ObjectMapper();
                             instance = mapper.readValue(body, StaticData.class);
-                            TempFile.saveTempFile("staticDataTemp",body);
+                            TempFile.saveTempFile(nameFileTemp,body);
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
@@ -74,12 +75,11 @@ public class StaticData {
     public static void loadDataFromTempFile(){
         try {
             ObjectMapper mapper = new ObjectMapper();
-            instance = mapper.readValue(TempFile.readTempFile(), StaticData.class);
+            instance = mapper.readValue(TempFile.readTempFile(nameFileTemp), StaticData.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
-
 
     public List<StaticDataResult> getResults() {
         return results;
@@ -88,5 +88,6 @@ public class StaticData {
     public void setResults(List<StaticDataResult> results) {
         this.results = results;
     }
+
 }
 
