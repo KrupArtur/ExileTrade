@@ -1,4 +1,4 @@
-<h1 style="text-align: center; font-size: 24px;"> ExileTrader - PoE Trade </h1>
+<h1 style="text-align: center; font-size: 24px;"> ExileTrader - PoE2 Trade </h1>
 
 ![image](https://github.com/user-attachments/assets/b32f18a0-3051-4872-a4dd-0ab869fedaca)# Download ExileTrader Installer
 
