@@ -1,6 +1,8 @@
 package com.demo.poe.Controller;
 
 import com.demo.poe.HelloApplication;
+import com.demo.poe.Model.Json.Filters.FilterResponse;
+import com.demo.poe.Model.Json.Filters.ItemOption;
 import com.demo.poe.Model.Json.Stats.Entry;
 import com.demo.poe.Model.ItemDetails;
 import com.demo.poe.Model.Json.ResultForQuery;
@@ -38,6 +40,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -233,6 +236,7 @@ public class MainWindowController extends BaseController {
 
         String itemsCode = generateItemsCode(response);
         if (itemsCode.isEmpty()) return;
+
         String url = TRADE_API_BASE_URL + "fetch/" + itemsCode + "?query=" + response.getId();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -245,14 +249,6 @@ public class MainWindowController extends BaseController {
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::getBodyWithLimit)
                 .thenAcceptAsync(this::processFetchResponse)
-                .exceptionally(e -> {
-                    Pattern pattern = Pattern.compile("\\d*");
-                    Matcher matcher = pattern.matcher(e.getMessage());
-                    while(matcher.find()){
-                        resultNotFound.setText("X-Rate-Limit " + matcher.group());
-                    }
-                    return null;
-                })
                 .join();
     }
 
@@ -321,7 +317,8 @@ public class MainWindowController extends BaseController {
                     .thenAcceptAsync(ResultForQuery::loadDataFromRequest)
                     .join();
 
-           // resultNotFound.setText(String.valueOf(ResultForQuery.getInstance().getResult().size()));
+            resultNotFound.setText("Matched " + ResultForQuery.getInstance().getTotal());
+            resultNotFound.setStyle("-fx-font-size: 14px;");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -363,13 +360,21 @@ public class MainWindowController extends BaseController {
 
     public String createQuery(Map<String, String> item) {
         List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
+        List<Mod> combined = Stream.concat(mods.stream(), getModFromGUI().stream())
+                .filter(mod -> mod.getName() != null && !mod.getName().isEmpty())
+                .collect(Collectors.toMap(
+                        Mod::getName,
+                        Function.identity(),
+                        (mod1, mod2) -> mod1
+                ))
+                .values()
+                .stream()
+                .toList();
 
-        List<Mod> modsWithId = mods.stream()
+        List<Mod> modsWithId = combined.stream()
                 .flatMap(mod -> StaticData.getInstance().getResults().stream()
-                        .flatMap(result -> findIdsByText(result.getEntries(), mod)))
-                .collect(Collectors.toList());
+                        .flatMap(result -> findIdsByText(result.getEntries(), mod))).toList();
 
-        System.out.println(modsWithId);
         StringBuilder query = new StringBuilder();
         query.append("{\"query\":{\"status\":{\"option\":\"online\"},\"stats\":[{\"type\":\"and\",\"filters\":[");
 
@@ -377,7 +382,7 @@ public class MainWindowController extends BaseController {
             query.append("{\"id\": \"").append(modsWithId.get(i).getId()).append("\",\"value\":");
             if (modsWithId.get(i).getValue() != null) {
                 query.append("{\"min\":").append(modsWithId.get(i).getValue()).append("},\"disabled\": false}");
-            } else if (modsWithId.get(i).getValueMin() != null) {
+            } else if (modsWithId.get(i).getValueMin() != null && !modsWithId.get(i).getValueMin().isEmpty()) {
                 query.append("{\"min\":").append(modsWithId.get(i).getValueMin()).append("},\"disabled\": false}");
             } else {
                 query.append("{},\"disabled\": false}");
@@ -385,21 +390,32 @@ public class MainWindowController extends BaseController {
 
             if (i < modsWithId.size() - 1) query.append(",");
         }
-
+        String itemClass = ParserData.findNameForFilters(ClipboardContent.getClipboardContent(), "Item Class: ");
         boolean isItemLevelOrQualityOrCorrupted = false;
         if((itemLevelField.getText() != null && !itemLevelField.getText().isEmpty()) ||
-                (itemQualityField.getText() != null && !itemQualityField.getText().isEmpty())) {
+                (itemQualityField.getText() != null && !itemQualityField.getText().isEmpty()) ||
+                !itemClass.isEmpty()) {
             isItemLevelOrQualityOrCorrupted = true;
             query.append("]}], \"filters\": { \"type_filters\": { \"filters\": {");
             if(!itemLevelField.getText().isEmpty()){
                 query.append("\"ilvl\": { \"min\": ") .append(itemLevelField.getText()).append("}");
-
             }
+
             if (!itemQualityField.getText().isEmpty()){
                 if(query.toString().contains("\"ilvl\"")) query.append(",");
-                if(!itemQualityField.getText().isEmpty()) {
-                    query.append("\"quality\": { \"min\": ").append(itemQualityField.getText()).append("}");
-                }
+                query.append("\"quality\": { \"min\": ").append(itemQualityField.getText()).append("}");
+            }
+
+            if(!itemClass.isEmpty()){
+                if(query.toString().contains("\"ilvl\"") || query.toString().contains("\"quality\"") ) query.append(",");
+                query.append("\"category\":{\"option\":\"")
+                        .append(FilterResponse.getInstance().getFilters().stream()
+                                .flatMap(filterType -> filterType.getFilters().stream())
+                                .filter(filters -> filters.getText().equals("Item Category"))
+                                .flatMap(filter -> filter.getOption().getOptions().stream())
+                                .filter(filterOption -> itemClass.contains(filterOption.getText()))
+                                .map(ItemOption::getId).findFirst().orElse("")).append("\"}");
+
             }
 
             if(isCorrupted.isSelected())
@@ -478,6 +494,28 @@ public class MainWindowController extends BaseController {
                 !entry.getId().contains("rune") &&
                 !entry.getId().equals("explicit.stat_3489782002");
     }
+    public List<Mod> getModFromGUI(){
+        List<Mod> modArrayList = new ArrayList<>();
+        for (var node : mods.getChildren()) {
+            if (node instanceof HBox hbox) {
+                Mod m = new Mod();
+                for (var element : hbox.getChildren()) {
+                    if (element instanceof ComboBox mod) {
+                        m.setName(mod.getValue().toString());
+                    }
+                    if(element instanceof TextField textField){
+                        if(textField.getPromptText().equals("MIN")){
+                            m.setValueMin(textField.getText());
+                        } else if (textField.getPromptText().equals("MAX")){
+                            m.setValueMax(textField.getText());
+                        }
+                    }
+                }
+                modArrayList.add(m);
+            }
+        }
+        return modArrayList;
+    }
 
     public boolean findModInVBox(String text) {
         for (var node : mods.getChildren()) {
@@ -507,8 +545,8 @@ public class MainWindowController extends BaseController {
         if (!vbox.getChildren().isEmpty()) vbox.getChildren().clear();
         String data = ClipboardContent.getClipboardContent();
         Map<String, String> itemData = ParserData.parseItemData(data);
-        itemLevelField.setText(ParserData.findMod(data, "Item Level: "));
-        itemQualityField.setText(ParserData.findMod(data, "Quality: +"));
+        itemLevelField.setText(ParserData.findValueForFilters(data, "Item Level: "));
+        itemQualityField.setText(ParserData.findValueForFilters(data, "Quality: +"));
         if(itemData != null) {
             for (String text : itemData.get("Mods").split("\n")) {
                 vbox.getChildren().add(cretaeHBox(text));

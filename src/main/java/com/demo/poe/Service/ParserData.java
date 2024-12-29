@@ -32,15 +32,20 @@ public class ParserData {
         return itemDetails;
     }
 
-    public static String findMod(String itemData, String mod){
+    public static String findValueForFilters(String itemData, String filter){
        List<String> allData = Arrays.stream(itemData.split("\\n")).toList();
-       String text = allData.stream().filter(x -> x.contains(mod)).findAny().orElse("").replace(mod, "");
+       String text = allData.stream().filter(x -> x.contains(filter)).findAny().orElse("").replace(filter, "");
        Pattern pattern =  Pattern.compile("\\d*");
        Matcher matcher = pattern.matcher(text);
        while(matcher.find()){
            return matcher.group();
        }
        return "";
+    }
+
+    public static String findNameForFilters(String itemData, String filter){
+        List<String> allData = Arrays.stream(itemData.split("\\n")).toList();
+        return allData.stream().filter(x -> x.contains(filter)).findAny().orElse("").replace(filter, "");
     }
 
     private static String parseRequirements(String[] lines, int currentLine) {

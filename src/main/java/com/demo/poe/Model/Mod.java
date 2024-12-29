@@ -8,6 +8,9 @@ public class Mod {
     String valueMin;
     String valueMax;
 
+    public Mod() {
+    }
+
     public Mod(String id, String name, String type, String value, String valueMin, String valueMax) {
         this.id = id;
         this.name = name;

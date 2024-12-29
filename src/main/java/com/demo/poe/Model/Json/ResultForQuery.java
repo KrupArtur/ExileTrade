@@ -15,6 +15,7 @@ public class ResultForQuery {
     private int complexity;
     @JsonProperty("result")
     private List<String> result;
+    String total;
 
     private ResultForQuery() {}
 
@@ -36,7 +37,6 @@ public class ResultForQuery {
         }
     }
 
-    // Gettery i settery
     public String getId() {
         return id;
     }
@@ -59,6 +59,14 @@ public class ResultForQuery {
 
     public void setResult(List<String> result) {
         this.result = result;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
     }
 
     @Override
