@@ -15,4 +15,7 @@ How to Use ExileTrader:
 2.Once the app is running, simply press Ctrl + C while hovering over any item in Path of Exile 2 that you want to check.
 
 
+Currently, it works only for Path of Exile 2, but I am working on making it work for Path of Exile as well.
+
+
 
