@@ -46,6 +46,7 @@ public class ParserData {
     public static String findNameForFilters(String itemData, String filter){
         List<String> allData = Arrays.stream(itemData.split("\\n")).toList();
         return allData.stream().filter(x -> x.contains(filter)).findAny().orElse("").replace(filter, "");
+
     }
 
     private static String parseRequirements(String[] lines, int currentLine) {

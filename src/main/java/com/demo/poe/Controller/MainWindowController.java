@@ -546,6 +546,7 @@ public class MainWindowController extends BaseController {
 
     public void addMods(VBox vbox) {
         if (!vbox.getChildren().isEmpty()) vbox.getChildren().clear();
+        if(!WindowDetector.isPoEActive()) return;
         String data = ClipboardContent.getClipboardContent();
         Map<String, String> itemData = ParserData.parseItemData(data);
         itemLevelField.setText(ParserData.findValueForFilters(data, "Item Level: "));

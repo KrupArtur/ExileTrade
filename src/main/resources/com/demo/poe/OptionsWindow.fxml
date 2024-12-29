@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -37,6 +38,57 @@
       </BorderPane>
       <TabPane layoutX="2.0" layoutY="44.0" prefHeight="439.0" prefWidth="398.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
+            <Tab text="Standard">
+               <content>
+                  <HBox>
+                     <children>
+                        <VBox prefHeight="308.0" prefWidth="197.0">
+                           <children>
+                              <HBox prefHeight="37.0" prefWidth="211.0">
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="45.0" prefWidth="197.0" text="PoE" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="41.0" prefWidth="197.0">
+                                 <children>
+                                    <ComboBox fx:id="leaguesPOE" prefHeight="28.0" prefWidth="192.0" promptText="Leagues" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="3.0" />
+                                 </VBox.margin></HBox>
+                           </children>
+                        </VBox>
+                        <VBox layoutX="10.0" layoutY="10.0" prefHeight="405.0" prefWidth="203.0">
+                           <children>
+                              <HBox prefHeight="37.0" prefWidth="211.0">
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="26.0" prefWidth="201.0" text="PoE 2" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="398.0">
+                                 <children>
+                                    <ComboBox fx:id="leaguesPOE2" prefHeight="28.0" prefWidth="192.0" promptText="Leagues" />
+                                 </children></HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </content>
+            </Tab>
           <Tab text="Short cut">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
