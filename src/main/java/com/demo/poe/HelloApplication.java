@@ -33,7 +33,7 @@ public class HelloApplication extends Application {
         new FXTrayIcon.Builder(viewFactory.getMainWindow(), getClass().getResource(SettingsManager.getInstance().getSetting("icon32")))
                 .menuItem("Show", e -> {
                     viewFactory.getMainWindow().show();
-                }).menuItem("Options",e -> {
+                }).menuItem("Settings",e -> {
                    viewFactory.getMainWindow().hide();
                    viewFactory.showOptionsWindow();
                 })

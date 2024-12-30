@@ -1,10 +1,12 @@
 package com.demo.poe.Service;
 
 import com.demo.poe.Model.Settings;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Properties;
 
 public class TempFile {
@@ -59,11 +61,14 @@ public class TempFile {
         }
     }
 
-    public static void saveConfig(String key, String value) {
-        Properties properties = new Properties();
-        try (FileOutputStream output = new FileOutputStream("config.properties")) {
-            properties.setProperty(key, value);
-            properties.store(output, "Application Configuration");
+    public static void saveConfig(List<Settings> settingsList) {
+        JSONObject json = new JSONObject();
+        for (Settings setting: settingsList) {
+            json.put(setting.getId(),setting.getValue());
+        }
+
+        try {
+            Files.write(Paths.get("settings.json"), json.toString(4).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.demo.poe.Controller;
 
+import com.demo.poe.Events.MenuDraggedAndPressed;
 import com.demo.poe.HelloApplication;
 import com.demo.poe.Model.Json.Filters.FilterResponse;
 import com.demo.poe.Model.Json.Filters.ItemOption;
@@ -50,7 +51,7 @@ import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 
 public class MainWindowController extends BaseController {
-
+    private static final MenuDraggedAndPressed menuDraggedAndPressed = new MenuDraggedAndPressed();
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String TRADE_API_BASE_URL = "https://www.pathofexile.com/api/trade2/";
@@ -153,7 +154,7 @@ public class MainWindowController extends BaseController {
 
     @FXML
     public void menuDragged(MouseEvent mouseEvent) {
-        if(gameWindowRect != null) {
+       /* if(gameWindowRect != null) {
             Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
 
             double newX = mouseEvent.getScreenX() - xOffset;
@@ -174,21 +175,24 @@ public class MainWindowController extends BaseController {
 
             stage.setX(newX);
             stage.setY(newY);
-        }
+        }*/
+        menuDraggedAndPressed.menuDragged(mouseEvent);
     }
 
     @FXML
     public void menuPressed(MouseEvent mouseEvent) {
-        WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
+       /* WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
         if (gameWindowRect != null) {
             xOffset = mouseEvent.getSceneX();
             yOffset = mouseEvent.getSceneY();
             this.gameWindowRect = gameWindowRect;
-        }
+        }*/
+        menuDraggedAndPressed.menuPressed(mouseEvent);
     }
 
     @FXML
     void closeBtn(ActionEvent event) {
+        viewFactory.getStage("MainWindow").hide();
         viewFactory.getStage("MainWindow").hide();
     }
 

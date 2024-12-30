@@ -5,4 +5,5 @@
 # Ignorowanie katalogu wynikowego
 /out/
 /target/
-tempFilePath.txt
+settings.json
+config.properties
