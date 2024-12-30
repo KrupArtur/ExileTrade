@@ -55,6 +55,16 @@ public class OptionsWindowController extends BaseController {
         viewFactory.getStage("MainWindow").show();
     }
 
+    @FXML
+    void saveAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void cancelAction(ActionEvent event) {
+
+    }
+
     private void getLeaguesToPoe(){
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -75,9 +85,8 @@ public class OptionsWindowController extends BaseController {
     private void accept(String body) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<Leagues> leaguesList = objectMapper.readValue(body, new TypeReference<List<Leagues>>() {
-            });
-            List<String> z = leaguesList.stream().map(x -> x.getId()).toList();
+            List<Leagues> leaguesList = objectMapper.readValue(body, new TypeReference<List<Leagues>>() {});
+            List<String> z = leaguesList.stream().map(Leagues::getId).toList();
             leaguesPOE.setItems(FXCollections.observableArrayList(z));
         } catch (JsonProcessingException e) {
             e.printStackTrace();

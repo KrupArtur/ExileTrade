@@ -1,10 +1,11 @@
 package com.demo.poe.Service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.demo.poe.Model.Settings;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class TempFile {
     public static File tempFile;
@@ -35,7 +36,6 @@ public class TempFile {
    }
 
 
-
     public static String readTempFile(String nameFileTemp) {
         try {
             return new String(Files.readAllBytes(Paths.get(System.getProperty("java.io.tmpdir") + File.separator + nameFileTemp)));
@@ -44,4 +44,29 @@ public class TempFile {
         }
         return null;
     }
+
+    public static void loadSettings(String filePath) {
+        Properties properties = new Properties();
+        try (FileInputStream input = new FileInputStream(filePath)) {
+            properties.load(input);
+
+            for (String key : properties.stringPropertyNames()) {
+                String value = properties.getProperty(key);
+                Settings.addSetting(key, value);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveConfig(String key, String value) {
+        Properties properties = new Properties();
+        try (FileOutputStream output = new FileOutputStream("config.properties")) {
+            properties.setProperty(key, value);
+            properties.store(output, "Application Configuration");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

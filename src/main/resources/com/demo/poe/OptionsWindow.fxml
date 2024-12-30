@@ -40,53 +40,61 @@
         <tabs>
             <Tab text="Standard">
                <content>
-                  <HBox>
+                  <VBox>
                      <children>
-                        <VBox prefHeight="308.0" prefWidth="197.0">
+                        <HBox>
                            <children>
-                              <HBox prefHeight="37.0" prefWidth="211.0">
+                              <VBox prefHeight="308.0" prefWidth="197.0">
                                  <children>
-                                    <Label alignment="CENTER" prefHeight="45.0" prefWidth="197.0" text="PoE" textAlignment="CENTER">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="41.0" prefWidth="197.0">
-                                 <children>
+                                    <HBox prefHeight="37.0" prefWidth="211.0">
+                                       <children>
+                                          <Label alignment="CENTER" prefHeight="45.0" prefWidth="197.0" text="PoE" textAlignment="CENTER">
+                                             <font>
+                                                <Font size="24.0" />
+                                             </font>
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </Label>
+                                       </children>
+                                    </HBox>
                                     <ComboBox fx:id="leaguesPOE" prefHeight="28.0" prefWidth="192.0" promptText="Leagues" />
                                  </children>
-                                 <VBox.margin>
-                                    <Insets top="3.0" />
-                                 </VBox.margin></HBox>
-                           </children>
-                        </VBox>
-                        <VBox layoutX="10.0" layoutY="10.0" prefHeight="405.0" prefWidth="203.0">
-                           <children>
-                              <HBox prefHeight="37.0" prefWidth="211.0">
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="10.0" prefHeight="405.0" prefWidth="203.0">
                                  <children>
-                                    <Label alignment="CENTER" prefHeight="26.0" prefWidth="201.0" text="PoE 2" textAlignment="CENTER">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="398.0">
-                                 <children>
+                                    <HBox prefHeight="37.0" prefWidth="211.0">
+                                       <children>
+                                          <Label alignment="CENTER" prefHeight="26.0" prefWidth="201.0" text="PoE 2" textAlignment="CENTER">
+                                             <font>
+                                                <Font size="24.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </HBox>
                                     <ComboBox fx:id="leaguesPOE2" prefHeight="28.0" prefWidth="192.0" promptText="Leagues" />
-                                 </children></HBox>
+                                 </children>
+                              </VBox>
                            </children>
-                        </VBox>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#saveAction" text="Save">
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#cancelAction" text="Cancel">
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children></HBox>
                      </children>
-                  </HBox>
+                  </VBox>
                </content>
             </Tab>
           <Tab text="Short cut">
