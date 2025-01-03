@@ -47,18 +47,13 @@ public class TempFile {
         return null;
     }
 
-    public static void loadSettings(String filePath) {
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(filePath)) {
-            properties.load(input);
-
-            for (String key : properties.stringPropertyNames()) {
-                String value = properties.getProperty(key);
-                Settings.addSetting(key, value);
-            }
+    public static String loadSettings() {
+        try {
+            return new String(Files.readAllBytes(Paths.get("settings.json")));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public static void saveConfig(List<Settings> settingsList) {

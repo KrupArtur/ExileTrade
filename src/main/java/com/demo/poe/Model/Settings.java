@@ -1,11 +1,13 @@
 package com.demo.poe.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Settings {
 
-    private static List<Settings> instance = new ArrayList<>();
+    private static Map<String ,Settings> instance = new HashMap<>();
 
     String id;
     String value;
@@ -18,7 +20,7 @@ public class Settings {
         this.value = value;
     }
 
-    public static List<Settings> getInstance() {
+    public static Map<String ,Settings> getInstance() {
         return instance;
     }
 
@@ -39,6 +41,13 @@ public class Settings {
     }
 
     public static void addSetting(String id, String value) {
-        instance.add(new Settings(id, value));
+        instance.put(id ,new Settings(id, value));
+    }
+
+    public String getValueForPoe(){
+        if(!Boolean.parseBoolean(instance.get("exactValuePoE2").getValue())){
+            return instance.get("fillStatAroundPoE2").getValue();
+        }
+        return "";
     }
 }

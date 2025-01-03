@@ -9,6 +9,7 @@ import com.demo.poe.Model.ItemDetails;
 import com.demo.poe.Model.Json.ResultForQuery;
 import com.demo.poe.Model.Json.Stats.StaticData;
 import com.demo.poe.Model.Mod;
+import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.*;
 import com.demo.poe.View.ViewFactory;
@@ -35,10 +36,12 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -49,6 +52,7 @@ import java.util.stream.Stream;
 
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
+import org.json.JSONObject;
 
 public class MainWindowController extends BaseController {
     private static final MenuDraggedAndPressed menuDraggedAndPressed = new MenuDraggedAndPressed();
@@ -58,6 +62,10 @@ public class MainWindowController extends BaseController {
     private static final int MAXRESULTRESPONS = 9;
     private WinDef.RECT gameWindowRect;
     private Stage stage;
+
+    private String leagues = "Standard";
+    private String fillStatAroundPoE = "10";
+    private boolean isExacteValue = false;
 
     @FXML
     private CheckBox isCorrupted;
@@ -101,7 +109,10 @@ public class MainWindowController extends BaseController {
 
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
+        String outputPath = "save.json";
+        JSONObject json = readBinarySaveFile("F:\\palworld\\Level.sav");
+        saveJsonToFile(json, outputPath);
         lvl.setCellValueFactory(new PropertyValueFactory<>("level"));
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
 
@@ -136,6 +147,38 @@ public class MainWindowController extends BaseController {
                 itemQualityField.setText(oldValue);
             }
         });
+
+        leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
+        fillStatAroundPoE = Settings.getInstance().get("fillStatAroundPoE2") != null ? Settings.getInstance().get("fillStatAroundPoE2").getValue() : "10";
+        isExacteValue = Settings.getInstance().get("exactValuePoE2") != null && Boolean.parseBoolean(Settings.getInstance().get("exactValuePoE2").getValue());
+    }
+    public static JSONObject readBinarySaveFile(String inputPath) throws IOException {
+        try (FileInputStream fis = new FileInputStream(inputPath)) {
+            byte[] data = fis.readAllBytes(); // Wczytanie wszystkich bajtów
+            String content = new String(data, StandardCharsets.UTF_8); // Próba odczytu jako tekst
+
+            // Utworzenie JSON (jeśli plik zawiera dane tekstowe w formacie key=value)
+            JSONObject json = new JSONObject();
+            for (String line : content.split("\n")) {
+                String[] keyValue = line.split("=", 2);
+                if (keyValue.length == 2) {
+                    json.put(keyValue[0].trim(), keyValue[1].trim());
+                }
+            }
+            return json;
+        }
+    }
+
+    /**
+     * Zapis JSON do pliku wynikowego.
+     * @param json JSONObject do zapisania
+     * @param outputPath Ścieżka do pliku wynikowego
+     * @throws IOException jeśli wystąpi błąd zapisu
+     */
+    public static void saveJsonToFile(JSONObject json, String outputPath) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(outputPath)) {
+            fos.write(json.toString(4).getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @FXML
