@@ -51,9 +51,8 @@ public class TempFile {
         try {
             return new String(Files.readAllBytes(Paths.get("settings.json")));
         } catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static void saveConfig(List<Settings> settingsList) {

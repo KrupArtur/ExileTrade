@@ -71,7 +71,9 @@ public class OptionsWindowController extends BaseController {
 
     private void loadData() {
         try {
-            JsonNode rootNode = new ObjectMapper().readTree(TempFile.loadSettings());
+            String settings = TempFile.loadSettings();
+            if(settings == null || settings.isEmpty()) return;
+            JsonNode rootNode = new ObjectMapper().readTree(settings);
 
             Iterator<String> fieldNames = rootNode.fieldNames();
             while (fieldNames.hasNext()) {

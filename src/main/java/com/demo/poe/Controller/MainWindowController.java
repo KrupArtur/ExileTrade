@@ -523,7 +523,8 @@ public class MainWindowController extends BaseController {
                 Mod m = new Mod();
                 for (var element : hbox.getChildren()) {
                     if (element instanceof ComboBox mod) {
-                        m.setName(mod.getValue().toString());
+                        if(mod.getValue() != null)
+                            m.setName(mod.getValue().toString());
                     }
                     if(element instanceof TextField textField){
                         if(textField.getPromptText().equals("MIN")){
