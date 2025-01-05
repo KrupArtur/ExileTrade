@@ -134,7 +134,8 @@ public class OptionsWindowController extends BaseController {
     public void closeBtn(ActionEvent actionEvent) {
         viewFactory.getStage("OptionsWindow").close();
         viewFactory.removeStage("OptionsWindow");
-        viewFactory.getStage("MainWindow").show();
+        if(poeTradeManager.mainWindowWasVisible)
+         viewFactory.getStage("MainWindow").show();
     }
 
     @FXML

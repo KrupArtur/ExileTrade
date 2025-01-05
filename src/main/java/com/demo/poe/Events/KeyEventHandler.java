@@ -133,10 +133,12 @@ public class KeyEventHandler implements NativeKeyListener {
         controller.clearTable();
 
         if (isWindowVisible && newClipbordContent.equals(lastClipbordContent)) {
+            controller.setVisibleWindow(false);
             Platform.runLater(primaryStage::hide);
             lastClipbordContent = "";
             isWindowVisible = false;
         } else {
+            controller.setVisibleWindow(true);
             lastClipbordContent = newClipbordContent;
             showWindowAtCursor();
             isWindowVisible = true;

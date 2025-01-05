@@ -154,10 +154,9 @@ public class MainWindowController extends BaseController {
     }
     public static JSONObject readBinarySaveFile(String inputPath) throws IOException {
         try (FileInputStream fis = new FileInputStream(inputPath)) {
-            byte[] data = fis.readAllBytes(); // Wczytanie wszystkich bajtów
-            String content = new String(data, StandardCharsets.UTF_8); // Próba odczytu jako tekst
+            byte[] data = fis.readAllBytes();
+            String content = new String(data, StandardCharsets.UTF_8);
 
-            // Utworzenie JSON (jeśli plik zawiera dane tekstowe w formacie key=value)
             JSONObject json = new JSONObject();
             for (String line : content.split("\n")) {
                 String[] keyValue = line.split("=", 2);
@@ -197,45 +196,17 @@ public class MainWindowController extends BaseController {
 
     @FXML
     public void menuDragged(MouseEvent mouseEvent) {
-       /* if(gameWindowRect != null) {
-            Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-
-            double newX = mouseEvent.getScreenX() - xOffset;
-            double newY = mouseEvent.getScreenY() - yOffset;
-
-            if (newX < gameWindowRect.left) {
-                newX = gameWindowRect.left;
-            }
-            if (newX + stage.getWidth() > gameWindowRect.right) {
-                newX = gameWindowRect.right - stage.getWidth();
-            }
-            if (newY < gameWindowRect.top) {
-                newY = gameWindowRect.top;
-            }
-            if (newY + stage.getHeight() > gameWindowRect.bottom) {
-                newY = gameWindowRect.bottom - stage.getHeight();
-            }
-
-            stage.setX(newX);
-            stage.setY(newY);
-        }*/
         menuDraggedAndPressed.menuDragged(mouseEvent);
     }
 
     @FXML
     public void menuPressed(MouseEvent mouseEvent) {
-       /* WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
-        if (gameWindowRect != null) {
-            xOffset = mouseEvent.getSceneX();
-            yOffset = mouseEvent.getSceneY();
-            this.gameWindowRect = gameWindowRect;
-        }*/
         menuDraggedAndPressed.menuPressed(mouseEvent);
     }
 
     @FXML
     void closeBtn(ActionEvent event) {
-        viewFactory.getStage("MainWindow").hide();
+        poeTradeManager.mainWindowWasVisible = false;
         viewFactory.getStage("MainWindow").hide();
     }
 
@@ -353,7 +324,7 @@ public class MainWindowController extends BaseController {
 
             String json = createQuery(item);
 
-            String url = TRADE_API_BASE_URL + "search/Standard";
+            String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -409,6 +380,7 @@ public class MainWindowController extends BaseController {
     }
 
     public String createQuery(Map<String, String> item) {
+        int about = isExacteValue ? 1 : (1 - (Integer.parseInt(fillStatAroundPoE)/100));
         List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
         List<Mod> combined = Stream.concat(mods.stream(), getModFromGUI().stream())
                 .filter(mod -> mod.getName() != null && !mod.getName().isEmpty())
@@ -431,9 +403,9 @@ public class MainWindowController extends BaseController {
         for (int i = 0; i < modsWithId.size(); i++) {
             query.append("{\"id\": \"").append(modsWithId.get(i).getId()).append("\",\"value\":");
             if (modsWithId.get(i).getValue() != null) {
-                query.append("{\"min\":").append(modsWithId.get(i).getValue()).append("},\"disabled\": false}");
+                query.append("{\"min\":").append(Integer.parseInt(modsWithId.get(i).getValue()) * about).append("},\"disabled\": false}");
             } else if (modsWithId.get(i).getValueMin() != null && !modsWithId.get(i).getValueMin().isEmpty()) {
-                query.append("{\"min\":").append(modsWithId.get(i).getValueMin()).append("},\"disabled\": false}");
+                query.append("{\"min\":").append(Integer.parseInt(modsWithId.get(i).getValueMin()) * about).append("},\"disabled\": false}");
             } else {
                 query.append("{},\"disabled\": false}");
             }
@@ -448,12 +420,12 @@ public class MainWindowController extends BaseController {
             isItemLevelOrQualityOrCorrupted = true;
             query.append("]}], \"filters\": { \"type_filters\": { \"filters\": {");
             if(!itemLevelField.getText().isEmpty()){
-                query.append("\"ilvl\": { \"min\": ") .append(itemLevelField.getText()).append("}");
+                query.append("\"ilvl\": { \"min\": ") .append(Integer.parseInt(itemLevelField.getText()) * about).append("}");
             }
 
             if (!itemQualityField.getText().isEmpty()){
                 if(query.toString().contains("\"ilvl\"")) query.append(",");
-                query.append("\"quality\": { \"min\": ").append(itemQualityField.getText()).append("}");
+                query.append("\"quality\": { \"min\": ").append(Integer.parseInt(itemQualityField.getText()) * about).append("}");
             }
 
             if(!itemClass.isEmpty()){
@@ -588,6 +560,10 @@ public class MainWindowController extends BaseController {
             }
         }
         return false;
+    }
+
+    public void setVisibleWindow(boolean isVisible){
+        poeTradeManager.mainWindowWasVisible = isVisible;
     }
 
 
