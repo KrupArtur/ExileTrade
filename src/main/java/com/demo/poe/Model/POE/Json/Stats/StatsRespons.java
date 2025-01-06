@@ -1,6 +1,5 @@
 package com.demo.poe.Model.POE.Json.Stats;
 
-import com.demo.poe.Model.POE2.Json.Stats.StaticData;
 import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,21 +13,21 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class Stats {
-    private static Stats instance;
+public class StatsRespons {
+    private static StatsRespons instance;
 
     private static final String nameFileTemp = "staticDataTempPOE.json";
 
     @JsonProperty("result")
     private List<Result> result;
 
-    public Stats() {}
+    public StatsRespons() {}
 
-    public Stats(List<Result> result) {
+    public StatsRespons(List<Result> result) {
         this.result = result;
     }
 
-    public static Stats getInstance(){
+    public static StatsRespons getInstance(){
         if(instance == null){
             if(!TempFile.fileTempExists(nameFileTemp)) {
                 loadData();
@@ -52,7 +51,7 @@ public class Stats {
                     .thenAccept(body -> {
                        try{
                            ObjectMapper mapper = new ObjectMapper();
-                           instance = mapper.readValue(body, Stats.class);
+                           instance = mapper.readValue(body, StatsRespons.class);
                            TempFile.saveTempFile(nameFileTemp, body);
                        }catch (Exception e){
                            e.printStackTrace();
@@ -66,7 +65,7 @@ public class Stats {
     public static void loadDataFromTempFile(){
         try {
             ObjectMapper mapper = new ObjectMapper();
-            instance = mapper.readValue(TempFile.readTempFile(nameFileTemp), Stats.class);
+            instance = mapper.readValue(TempFile.readTempFile(nameFileTemp), StatsRespons.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

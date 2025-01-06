@@ -1,6 +1,7 @@
 package com.demo.poe;
 
-import com.demo.poe.Model.POE.Json.Stats.Stats;
+import com.demo.poe.Model.POE.Json.Filters.FiltersRespons;
+import com.demo.poe.Model.POE.Json.Stats.StatsRespons;
 import com.demo.poe.Model.POE2.Json.Filters.FilterResponse;
 import com.demo.poe.Model.POE2.Json.Stats.StaticData;
 import com.demo.poe.Service.SettingsManager;
@@ -25,7 +26,8 @@ public class HelloApplication extends Application {
     public void start(Stage primaryStage) throws URISyntaxException {
         Logger logger = Logger.getLogger(org.jnativehook.GlobalScreen.class.getPackage().getName());
         logger.setLevel(Level.SEVERE);
-        Stats.getInstance();
+        FiltersRespons.getInstance();
+        StatsRespons.getInstance();
         StaticData.createInstance();
         FilterResponse.createInstance();
         ViewFactory viewFactory = new ViewFactory(new PoeTradeManager());
