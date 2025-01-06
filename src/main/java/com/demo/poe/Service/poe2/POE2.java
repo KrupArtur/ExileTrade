@@ -1,40 +1,61 @@
-package com.demo.poe.Service;
+package com.demo.poe.Service.poe2;
 
 import com.demo.poe.Model.ItemDetails;
+import com.demo.poe.Model.Json.Filters.FilterResponse;
+import com.demo.poe.Model.Json.Filters.ItemOption;
 import com.demo.poe.Model.Json.ResultForQuery;
+import com.demo.poe.Model.Json.Stats.Entry;
+import com.demo.poe.Model.Json.Stats.StaticData;
+import com.demo.poe.Model.Mod;
 import com.demo.poe.Model.Settings;
+import com.demo.poe.Service.ClipboardContent;
+import com.demo.poe.Service.POEApi;
+import com.demo.poe.Service.ParserData;
+import com.demo.poe.Service.ValidateResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class POE2 implements POEApi{
+public class POE2 implements POEApi {
 
     private static final String TRADE_API_BASE_URL = "https://www.pathofexile.com/api/trade2/";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final int MAXRESULTRESPONS = 9;
-    TableView<ItemDetails> table;
-    Label resultNotFound;
+    private TableView<ItemDetails> table;
+    private Label resultNotFound;
+    private TextField itemLevelField;
+    private TextField itemQualityField;
+    private CheckBox isCorrupted;
+    private VBox mods;
     private String leagues = "Standard";
-    private String fillStatAroundPoE = "10";
-    private boolean isExacteValue = false;
 
-    public POE2(TableView<ItemDetails> table, Label resultNotFound) {
+    public POE2(TableView<ItemDetails> table, Label resultNotFound, TextField itemLevelField, TextField itemQualityField, CheckBox isCorrupted, VBox mods) {
         this.table = table;
         this.resultNotFound = resultNotFound;
+        this.itemLevelField = itemLevelField;
+        this.itemQualityField = itemQualityField;
+        this.isCorrupted = isCorrupted;
+        this.mods = mods;
         leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
-        fillStatAroundPoE = Settings.getInstance().get("fillStatAroundPoE2") != null ? Settings.getInstance().get("fillStatAroundPoE2").getValue() : "10";
-        isExacteValue = Settings.getInstance().get("exactValuePoE2") != null && Boolean.parseBoolean(Settings.getInstance().get("exactValuePoE2").getValue());
-
     }
 
     @Override
@@ -61,7 +82,8 @@ public class POE2 implements POEApi{
     }
 
     @Override
-    public void searchItems(String json) {
+    public void searchItems(Map<String, String> item) {
+        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
         String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -86,7 +108,7 @@ public class POE2 implements POEApi{
         int endIndex = table.getItems().size() == 0
                 ? limit
                 : ((table.getItems().size() / limit) + 1) * limit;
-        if (endIndex > 18 || response.getResult().size() == table.getItems().size()) return "";
+        if (endIndex >= 18 || response.getResult().size() == table.getItems().size()) return "";
         return String.join(",", response.getResult().subList(startIndex, endIndex));
     }
 

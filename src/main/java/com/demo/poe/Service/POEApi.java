@@ -1,6 +1,8 @@
 package com.demo.poe.Service;
 
+import java.util.Map;
+
 public interface POEApi {
     void fetchItems();
-    void searchItems(String json);
+    void searchItems(Map<String, String> item);
 }
