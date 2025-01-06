@@ -252,7 +252,7 @@ public class MainWindowController extends BaseController {
     }
 
     private void fetchItems() {
-        ResultForQuery response = ResultForQuery.getInstance();
+        /*ResultForQuery response = ResultForQuery.getInstance();
         if (response == null || response.getResult() == null) return;
 
         String itemsCode = generateItemsCode(response);
@@ -270,7 +270,9 @@ public class MainWindowController extends BaseController {
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::getBodyWithLimit)
                 .thenAcceptAsync(this::processFetchResponse)
-                .join();
+                .join();*/
+        POE2 poe2 = new POE2(table, resultNotFound);
+        poe2.fetchItems();
     }
 
     private String generateItemsCode(ResultForQuery response) {
@@ -323,8 +325,9 @@ public class MainWindowController extends BaseController {
             assert item.size() != 0;
 
             String json = createQuery(item);
-
-            String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
+            POE2 poe2 = new POE2(table, resultNotFound);
+            poe2.searchItems(json);
+            /*String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -339,10 +342,11 @@ public class MainWindowController extends BaseController {
                     .join();
 
             resultNotFound.setText("Matched " + ResultForQuery.getInstance().getTotal());
-            resultNotFound.setStyle("-fx-font-size: 14px;");
+            resultNotFound.setStyle("-fx-font-size: 14px;");  */
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public String getBodyWithLimit(HttpResponse response) {
