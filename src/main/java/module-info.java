@@ -22,17 +22,20 @@ module com.example.demo1 {
     opens com.demo.poe.Controller to com.fasterxml.jackson.databind, javafx.fxml;
     exports com.demo.poe.Model;
     opens com.demo.poe.Model to com.fasterxml.jackson.databind, javafx.fxml;
-    exports com.demo.poe.Model.Json;
-    opens com.demo.poe.Model.Json to com.fasterxml.jackson.databind, javafx.fxml;
+    exports com.demo.poe.Model.POE2.Json;
+    opens com.demo.poe.Model.POE2.Json to com.fasterxml.jackson.databind, javafx.fxml;
     exports com.demo.poe.Service;
     opens com.demo.poe.Service to com.fasterxml.jackson.databind, javafx.fxml;
-    exports com.demo.poe.Model.Json.Filters;
-    opens com.demo.poe.Model.Json.Filters to com.fasterxml.jackson.databind, javafx.fxml;
-    exports com.demo.poe.Model.Json.Stats;
-    opens com.demo.poe.Model.Json.Stats to com.fasterxml.jackson.databind, javafx.fxml;
-    exports com.demo.poe.Model.Json.Settings.Leagues to com.fasterxml.jackson.databind;
+    exports com.demo.poe.Model.POE2.Json.Filters;
+    opens com.demo.poe.Model.POE2.Json.Filters to com.fasterxml.jackson.databind, javafx.fxml;
+    exports com.demo.poe.Model.POE2.Json.Stats;
+    opens com.demo.poe.Model.POE2.Json.Stats to com.fasterxml.jackson.databind, javafx.fxml;
+    exports com.demo.poe.Model.POE2.Json.Settings.Leagues to com.fasterxml.jackson.databind;
     exports com.demo.poe.Service.poe2;
     opens com.demo.poe.Service.poe2 to com.fasterxml.jackson.databind, javafx.fxml;
     exports com.demo.poe.Service.poe;
     opens com.demo.poe.Service.poe to com.fasterxml.jackson.databind, javafx.fxml;
+    exports com.demo.poe.Model.POE2;
+    opens com.demo.poe.Model.POE2 to com.fasterxml.jackson.databind, javafx.fxml;
+    exports com.demo.poe.Model.POE.Json.Stats to com.fasterxml.jackson.databind;
 }

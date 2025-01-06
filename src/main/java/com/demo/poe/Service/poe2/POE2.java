@@ -1,38 +1,21 @@
 package com.demo.poe.Service.poe2;
 
-import com.demo.poe.Model.ItemDetails;
-import com.demo.poe.Model.Json.Filters.FilterResponse;
-import com.demo.poe.Model.Json.Filters.ItemOption;
-import com.demo.poe.Model.Json.ResultForQuery;
-import com.demo.poe.Model.Json.Stats.Entry;
-import com.demo.poe.Model.Json.Stats.StaticData;
-import com.demo.poe.Model.Mod;
+import com.demo.poe.Model.POE2.ItemDetails;
+import com.demo.poe.Model.POE2.Json.ResultForQuery;
 import com.demo.poe.Model.Settings;
-import com.demo.poe.Service.ClipboardContent;
 import com.demo.poe.Service.POEApi;
-import com.demo.poe.Service.ParserData;
 import com.demo.poe.Service.ValidateResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class POE2 implements POEApi {
 

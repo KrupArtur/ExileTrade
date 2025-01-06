@@ -1,6 +1,6 @@
 package com.demo.poe.Events;
 
-import com.demo.poe.Model.Json.Stats.StaticData;
+import com.demo.poe.Model.POE2.Json.Stats.StaticData;
 import com.demo.poe.Service.ClipboardContent;
 import com.demo.poe.Service.WindowDetector;
 import com.demo.poe.Controller.MainWindowController;
@@ -116,6 +116,7 @@ public class KeyEventHandler implements NativeKeyListener {
     }
 
     private void toggleWindowVisibility() {
+        if(!WindowDetector.isPoEActive()) return;
         String newClipbordContent = ClipboardContent.getClipboardContent();
         controller.getVbox().getChildren().clear();
         controller.addMods(controller.getVbox());

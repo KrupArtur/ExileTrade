@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json.Settings.Leagues;
+package com.demo.poe.Model.POE2.Json.Settings.Leagues;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

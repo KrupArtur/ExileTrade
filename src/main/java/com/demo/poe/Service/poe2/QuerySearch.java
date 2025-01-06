@@ -1,10 +1,10 @@
 package com.demo.poe.Service.poe2;
 
-import com.demo.poe.Model.Json.Filters.FilterResponse;
-import com.demo.poe.Model.Json.Filters.ItemOption;
-import com.demo.poe.Model.Json.Stats.Entry;
-import com.demo.poe.Model.Json.Stats.StaticData;
-import com.demo.poe.Model.Mod;
+import com.demo.poe.Model.POE2.Json.Filters.FilterResponse;
+import com.demo.poe.Model.POE2.Json.Filters.ItemOption;
+import com.demo.poe.Model.POE2.Json.Stats.Entry;
+import com.demo.poe.Model.POE2.Json.Stats.StaticData;
+import com.demo.poe.Model.POE2.Mod;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.Service.ClipboardContent;
 import com.demo.poe.Service.ParserData;

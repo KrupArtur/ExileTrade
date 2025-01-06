@@ -1,6 +1,5 @@
-package com.demo.poe.Model.Json.Filters;
+package com.demo.poe.Model.POE2.Json.Filters;
 
-import com.demo.poe.Model.Json.Stats.StaticData;
 import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FilterResponse {
     private static FilterResponse instance;
-    private static final String nameFileTemp = "filterResponseTemp.json";
+    private static final String nameFileTemp = "filterResponseTempPOE2.json";
     @JsonProperty("result")
     List<FilterType> filters;
 

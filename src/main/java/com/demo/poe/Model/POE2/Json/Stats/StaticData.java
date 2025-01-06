@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json.Stats;
+package com.demo.poe.Model.POE2.Json.Stats;
 import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class StaticData {
     private static StaticData instance;
-    private static final String nameFileTemp = "staticDataTemp.json";
+    private static final String nameFileTemp = "staticDataTempPOE2.json";
 
     @JsonProperty("result")
     private List<StaticDataResult> results;

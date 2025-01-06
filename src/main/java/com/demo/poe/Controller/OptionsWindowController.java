@@ -1,8 +1,7 @@
 package com.demo.poe.Controller;
 
 import com.demo.poe.Events.MenuDraggedAndPressed;
-import com.demo.poe.Model.Json.Filters.FilterResponse;
-import com.demo.poe.Model.Json.Settings.Leagues.Leagues;
+import com.demo.poe.Model.POE2.Json.Settings.Leagues.Leagues;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.TempFile;
@@ -12,14 +11,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json.Filters;
+package com.demo.poe.Model.POE2.Json.Filters;
 
 public class ItemOption {
     private String id;

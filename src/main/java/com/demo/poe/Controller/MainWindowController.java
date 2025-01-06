@@ -2,13 +2,8 @@ package com.demo.poe.Controller;
 
 import com.demo.poe.Events.MenuDraggedAndPressed;
 import com.demo.poe.HelloApplication;
-import com.demo.poe.Model.Json.Filters.FilterResponse;
-import com.demo.poe.Model.Json.Filters.ItemOption;
-import com.demo.poe.Model.Json.Stats.Entry;
-import com.demo.poe.Model.ItemDetails;
-import com.demo.poe.Model.Json.ResultForQuery;
-import com.demo.poe.Model.Json.Stats.StaticData;
-import com.demo.poe.Model.Mod;
+import com.demo.poe.Model.POE2.ItemDetails;
+import com.demo.poe.Model.POE2.Json.ResultForQuery;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.*;
@@ -43,11 +38,6 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;

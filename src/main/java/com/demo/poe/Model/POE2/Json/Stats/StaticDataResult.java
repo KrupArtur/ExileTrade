@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json.Stats;
+package com.demo.poe.Model.POE2.Json.Stats;
 
 import java.util.List;
 

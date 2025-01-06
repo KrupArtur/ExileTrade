@@ -1,4 +1,4 @@
-package com.demo.poe.Model.Json;
+package com.demo.poe.Model.POE2.Json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
