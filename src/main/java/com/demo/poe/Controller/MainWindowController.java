@@ -99,9 +99,6 @@ public class MainWindowController extends BaseController {
 
     @FXML
     public void initialize() throws IOException {
-        String outputPath = "save.json";
-        JSONObject json = readBinarySaveFile("F:\\palworld\\Level.sav");
-        saveJsonToFile(json, outputPath);
         lvl.setCellValueFactory(new PropertyValueFactory<>("level"));
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
 
@@ -140,33 +137,6 @@ public class MainWindowController extends BaseController {
         leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
         fillStatAroundPoE = Settings.getInstance().get("fillStatAroundPoE2") != null ? Settings.getInstance().get("fillStatAroundPoE2").getValue() : "10";
         isExacteValue = Settings.getInstance().get("exactValuePoE2") != null && Boolean.parseBoolean(Settings.getInstance().get("exactValuePoE2").getValue());
-    }
-    public static JSONObject readBinarySaveFile(String inputPath) throws IOException {
-        try (FileInputStream fis = new FileInputStream(inputPath)) {
-            byte[] data = fis.readAllBytes();
-            String content = new String(data, StandardCharsets.UTF_8);
-
-            JSONObject json = new JSONObject();
-            for (String line : content.split("\n")) {
-                String[] keyValue = line.split("=", 2);
-                if (keyValue.length == 2) {
-                    json.put(keyValue[0].trim(), keyValue[1].trim());
-                }
-            }
-            return json;
-        }
-    }
-
-    /**
-     * Zapis JSON do pliku wynikowego.
-     * @param json JSONObject do zapisania
-     * @param outputPath Ścieżka do pliku wynikowego
-     * @throws IOException jeśli wystąpi błąd zapisu
-     */
-    public static void saveJsonToFile(JSONObject json, String outputPath) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(outputPath)) {
-            fos.write(json.toString(4).getBytes(StandardCharsets.UTF_8));
-        }
     }
 
     @FXML
@@ -243,39 +213,6 @@ public class MainWindowController extends BaseController {
     private void fetchItems() {
         POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
         poe2.fetchItems();
-    }
-
-    private String generateItemsCode(ResultForQuery response) {
-        int limit = Math.min(response.getResult().size(), MAXRESULTRESPONS);
-        int startIndex = table.getItems().size() == 0 ? 0 : table.getItems().size() + 1;
-        int endIndex = table.getItems().size() == 0
-                ? limit
-                : ((table.getItems().size() / limit) + 1) * limit;
-        if (endIndex > 18 || response.getResult().size() == table.getItems().size()) return "";
-        return String.join(",", response.getResult().subList(startIndex, endIndex));
-    }
-
-    private void processFetchResponse(String responseBody) {
-        try {
-            JsonNode rootNode = OBJECT_MAPPER.readTree(responseBody);
-            if (rootNode == null || !rootNode.has("result")) return;
-
-            rootNode.path("result").forEach(this::parseAndAddItem);
-
-            ScrollBar verticalScrollBar = getVerticalScrollBar();
-            if (verticalScrollBar != null) {
-
-                verticalScrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue.doubleValue() == 1.0) {
-                        System.out.println("Przewinięto na sam dół!");
-                        fetchItems();
-                    }
-                });
-            }
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
     }
 
     private void parseAndAddItem(JsonNode resultNode) {

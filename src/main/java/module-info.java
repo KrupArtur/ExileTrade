@@ -30,7 +30,7 @@ module com.example.demo1 {
     opens com.demo.poe.Model.POE2.Json.Filters to com.fasterxml.jackson.databind, javafx.fxml;
     exports com.demo.poe.Model.POE2.Json.Stats;
     opens com.demo.poe.Model.POE2.Json.Stats to com.fasterxml.jackson.databind, javafx.fxml;
-    exports com.demo.poe.Model.POE2.Json.Settings.Leagues to com.fasterxml.jackson.databind;
+    exports com.demo.poe.Model.Json.Leagues to com.fasterxml.jackson.databind;
     exports com.demo.poe.Service.poe2;
     opens com.demo.poe.Service.poe2 to com.fasterxml.jackson.databind, javafx.fxml;
     exports com.demo.poe.Service.poe;

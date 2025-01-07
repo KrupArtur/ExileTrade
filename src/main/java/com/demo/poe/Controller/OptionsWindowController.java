@@ -1,7 +1,7 @@
 package com.demo.poe.Controller;
 
 import com.demo.poe.Events.MenuDraggedAndPressed;
-import com.demo.poe.Model.POE2.Json.Settings.Leagues.Leagues;
+import com.demo.poe.Model.Json.Leagues.Leagues;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.TempFile;
