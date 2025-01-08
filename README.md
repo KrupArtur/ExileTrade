@@ -1,4 +1,4 @@
-<h1 style="text-align: center; font-size: 24px;"> ExileTrader - PoE2 Trade </h1>
+<h1 style="text-align: center; font-size: 24px;"> ExileTrader - PoE and PoE2 Trade </h1>
 
 ![image](https://github.com/user-attachments/assets/b32f18a0-3051-4872-a4dd-0ab869fedaca)# Download ExileTrader Installer
 
@@ -14,8 +14,6 @@ How to Use ExileTrader:
 
 2.Once the app is running, simply press Ctrl + C while hovering over any item in Path of Exile 2 that you want to check.
 
-
-Currently, it works only for Path of Exile 2, but I am working on making it work for Path of Exile as well.
 
 
 
