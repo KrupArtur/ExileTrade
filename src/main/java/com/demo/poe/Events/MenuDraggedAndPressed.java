@@ -37,6 +37,7 @@ public class MenuDraggedAndPressed {
 
     public void menuPressed(MouseEvent mouseEvent) {
         WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
+        if(gameWindowRect == null) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
         if (gameWindowRect != null) {
             xOffset = mouseEvent.getSceneX();
             yOffset = mouseEvent.getSceneY();

@@ -7,6 +7,7 @@ import com.demo.poe.Model.POE2.Json.ResultForQuery;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.*;
+import com.demo.poe.Service.poe.POE;
 import com.demo.poe.Service.poe2.POE2;
 import com.demo.poe.Service.poe2.QuerySearch;
 import com.demo.poe.View.ViewFactory;
@@ -45,16 +46,7 @@ import org.json.JSONObject;
 
 public class MainWindowController extends BaseController {
     private static final MenuDraggedAndPressed menuDraggedAndPressed = new MenuDraggedAndPressed();
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final String TRADE_API_BASE_URL = "https://www.pathofexile.com/api/trade2/";
-    private static final int MAXRESULTRESPONS = 9;
-    private WinDef.RECT gameWindowRect;
     private Stage stage;
-
-    private String leagues = "Standard";
-    private String fillStatAroundPoE = "10";
-    private boolean isExacteValue = false;
 
     @FXML
     private CheckBox isCorrupted;
@@ -133,10 +125,6 @@ public class MainWindowController extends BaseController {
                 itemQualityField.setText(oldValue);
             }
         });
-
-        leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
-        fillStatAroundPoE = Settings.getInstance().get("fillStatAroundPoE2") != null ? Settings.getInstance().get("fillStatAroundPoE2").getValue() : "10";
-        isExacteValue = Settings.getInstance().get("exactValuePoE2") != null && Boolean.parseBoolean(Settings.getInstance().get("exactValuePoE2").getValue());
     }
 
     @FXML
@@ -211,8 +199,13 @@ public class MainWindowController extends BaseController {
     }
 
     private void fetchItems() {
-        POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
-        poe2.fetchItems();
+        if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
+            POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
+            poe2.fetchItems();
+        } else if(WindowDetector.getGameWindow("Path of Exile") != null){
+            POE poe = new POE(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
+            poe.fetchItems();
+        }
     }
 
     private void parseAndAddItem(JsonNode resultNode) {
@@ -230,9 +223,13 @@ public class MainWindowController extends BaseController {
 
             assert item != null;
             assert item.size() != 0;
-
-            POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
-            poe2.searchItems(item);
+            if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
+                POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
+                poe2.searchItems(item);
+            } else if(WindowDetector.getGameWindow("Path of Exile") != null){
+                POE poe = new POE(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
+                poe.searchItems(item);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -344,8 +341,17 @@ public class MainWindowController extends BaseController {
         assert item != null;
         assert item.size() != 0;
 
-        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
-        openWebPage("https://www.pathofexile.com/trade2/search/poe2/Standard?q=" + URLEncoderE.encodeUrlFragment(json));
+         if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
+            String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
+
+            String leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
+            openWebPage("https://www.pathofexile.com/trade2/search/poe2/"+ leagues+"?q=" + URLEncoderE.encodeUrlFragment(json));
+        } else if(WindowDetector.getGameWindow("Path of Exile") != null){
+            String json = com.demo.poe.Service.poe.QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
+
+            String leagues = Settings.getInstance().get("leaguesPOE") != null ? Settings.getInstance().get("leaguesPOE").getValue() : "Standard";
+            openWebPage("https://www.pathofexile.com/trade/search/"+ leagues+"?q=" + URLEncoderE.encodeUrlFragment(json));
+        }
     }
 
     private void openWebPage(String url) {

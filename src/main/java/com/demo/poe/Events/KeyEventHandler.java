@@ -359,7 +359,7 @@ public class KeyEventHandler implements NativeKeyListener {
         double windowHeight = primaryStage.getHeight();
 
         WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
-
+        if(gameWindowRect == null ) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
         double newX = p.x - windowWidth - 10;
         double newY = p.y + 10;
 
