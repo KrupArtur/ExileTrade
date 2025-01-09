@@ -1,4 +1,4 @@
-package com.demo.poe.Events;
+package com.demo.poe.Service.Events;
 
 import com.demo.poe.Model.POE2.Json.Stats.StaticData;
 import com.demo.poe.Service.ClipboardContent;
@@ -360,6 +360,7 @@ public class KeyEventHandler implements NativeKeyListener {
 
         WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
         if(gameWindowRect == null ) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
+        if(gameWindowRect == null) return;
         double newX = p.x - windowWidth - 10;
         double newY = p.y + 10;
 

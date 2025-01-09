@@ -18,10 +18,25 @@
    <children>
       <BorderPane onMouseDragged="#menuDragged" onMousePressed="#menuPressed" prefHeight="42.0" prefWidth="377.0">
          <left>
-            <HBox prefHeight="42.0" prefWidth="338.0" BorderPane.alignment="CENTER">
+            <HBox prefHeight="42.0" prefWidth="325.0" BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="iconApplication" fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label fx:id="titleApplicationLabel" prefHeight="25.0" prefWidth="133.0" text="ExileTrader" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="iconApplication" fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="titleApplicationLabel" prefHeight="25.0" prefWidth="145.0" text="ExileTrader" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="32.0" prefWidth="167.0">
+                     <children>
+                        <ImageView fx:id="divineOrb" fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="priceDivine" alignment="CENTER" prefHeight="25.0" prefWidth="145.0" text="x 1 ⇐ ">
+                           <font>
+                              <Font size="11.6" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="exileOrb" fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </HBox>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

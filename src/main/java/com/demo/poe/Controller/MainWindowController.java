@@ -1,6 +1,6 @@
 package com.demo.poe.Controller;
 
-import com.demo.poe.Events.MenuDraggedAndPressed;
+import com.demo.poe.Service.Events.MenuDraggedAndPressed;
 import com.demo.poe.HelloApplication;
 import com.demo.poe.Model.POE2.ItemDetails;
 import com.demo.poe.Model.POE2.Json.ResultForQuery;
@@ -11,10 +11,7 @@ import com.demo.poe.Service.poe.POE;
 import com.demo.poe.Service.poe2.POE2;
 import com.demo.poe.Service.poe2.QuerySearch;
 import com.demo.poe.View.ViewFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jna.platform.win32.WinDef;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -35,14 +32,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
-import org.json.JSONObject;
 
 public class MainWindowController extends BaseController {
     private static final MenuDraggedAndPressed menuDraggedAndPressed = new MenuDraggedAndPressed();
@@ -81,6 +75,15 @@ public class MainWindowController extends BaseController {
     @FXML
     private Label resultNotFound;
 
+    @FXML
+    private ImageView divineOrb;
+
+    @FXML
+    private ImageView exileOrb;
+
+    @FXML
+    private Label priceDivine;
+
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -95,6 +98,8 @@ public class MainWindowController extends BaseController {
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         iconApplication.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("icon32")))));
+        divineOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("divine")))));
+        exileOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("exile")))));
         titleApplicationLabel.setText(SettingsManager.getInstance().getSetting("title"));
 
         ScrollBar verticalScrollBar = getVerticalScrollBar();
@@ -143,7 +148,7 @@ public class MainWindowController extends BaseController {
 
     @FXML
     public void menuDragged(MouseEvent mouseEvent) {
-        menuDraggedAndPressed.menuDragged(mouseEvent);
+        menuDraggedAndPressed.menuDraggedForGame(mouseEvent);
     }
 
     @FXML
@@ -196,6 +201,10 @@ public class MainWindowController extends BaseController {
 
     public void addItemToTable(ItemDetails itemDetails) {
         table.getItems().add(itemDetails);
+    }
+
+    public Label getPriceDivine() {
+        return priceDivine;
     }
 
     private void fetchItems() {

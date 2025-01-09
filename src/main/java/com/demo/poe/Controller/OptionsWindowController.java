@@ -1,6 +1,6 @@
 package com.demo.poe.Controller;
 
-import com.demo.poe.Events.MenuDraggedAndPressed;
+import com.demo.poe.Service.Events.MenuDraggedAndPressed;
 import com.demo.poe.Model.Json.Leagues.Leagues;
 import com.demo.poe.Model.Settings;
 import com.demo.poe.PoeTradeManager;
@@ -123,7 +123,7 @@ public class OptionsWindowController extends BaseController {
     }
 
     public void menuDragged(MouseEvent mouseEvent) {
-        menuDraggedAndPressed.menuDragged(mouseEvent);
+        menuDraggedAndPressed.menuDraggedForGame(mouseEvent);
     }
 
     public void menuPressed(MouseEvent mouseEvent) {

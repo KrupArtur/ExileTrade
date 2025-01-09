@@ -1,8 +1,9 @@
 package com.demo.poe.View;
 
 import com.demo.poe.Controller.OptionsWindowController;
-import com.demo.poe.Events.KeyEventHandler;
+import com.demo.poe.Service.Events.KeyEventHandler;
 import com.demo.poe.HelloApplication;
+import com.demo.poe.Model.POE2.Json.Orb.OrbsResons;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.SettingsManager;
 import com.demo.poe.Controller.MainWindowController;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.image.Image;
+import javafx.stage.WindowEvent;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
@@ -73,6 +75,10 @@ public class ViewFactory {
                 hidenStage(stage);
             });
             activeStages.put("MainWindow", stage);
+
+            stage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
+                OrbsResons.getInstance(mainWindowController.getPriceDivine());
+            });
 
             try {
                 GlobalScreen.registerNativeHook();

@@ -1,4 +1,4 @@
-package com.demo.poe.Events;
+package com.demo.poe.Service.Events;
 
 import com.demo.poe.Service.WindowDetector;
 import com.sun.jna.platform.win32.WinDef;
@@ -10,12 +10,13 @@ public class MenuDraggedAndPressed {
     private double xOffset = 0;
     private double yOffset = 0;
     WinDef.RECT gameWindowRect;
-    public void menuDragged(MouseEvent mouseEvent){
-        if(gameWindowRect != null) {
-            Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+    public void menuDraggedForGame(MouseEvent mouseEvent) {
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
 
-            double newX = mouseEvent.getScreenX() - xOffset;
-            double newY = mouseEvent.getScreenY() - yOffset;
+        double newX = mouseEvent.getScreenX() - xOffset;
+        double newY = mouseEvent.getScreenY() - yOffset;
+
+        if (gameWindowRect != null) {
 
             if (newX < gameWindowRect.left) {
                 newX = gameWindowRect.left;
@@ -29,19 +30,19 @@ public class MenuDraggedAndPressed {
             if (newY + stage.getHeight() > gameWindowRect.bottom) {
                 newY = gameWindowRect.bottom - stage.getHeight();
             }
-
-            stage.setX(newX);
-            stage.setY(newY);
         }
+
+        stage.setX(newX);
+        stage.setY(newY);
     }
 
     public void menuPressed(MouseEvent mouseEvent) {
         WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
         if(gameWindowRect == null) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
-        if (gameWindowRect != null) {
-            xOffset = mouseEvent.getSceneX();
-            yOffset = mouseEvent.getSceneY();
-            this.gameWindowRect = gameWindowRect;
-        }
+
+        xOffset = mouseEvent.getSceneX();
+        yOffset = mouseEvent.getSceneY();
+
+        this.gameWindowRect = gameWindowRect;
     }
 }

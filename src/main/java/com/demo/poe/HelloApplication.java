@@ -3,6 +3,8 @@ package com.demo.poe;
 import com.demo.poe.Model.POE.Json.Filters.FiltersRespons;
 import com.demo.poe.Model.POE.Json.Stats.StatsRespons;
 import com.demo.poe.Model.POE2.Json.Filters.FilterResponse;
+import com.demo.poe.Model.POE2.Json.Orb.OrbsResons;
+import com.demo.poe.Model.POE2.Json.Orb.Result;
 import com.demo.poe.Model.POE2.Json.Stats.StaticData;
 import com.demo.poe.Service.SettingsManager;
 import com.demo.poe.View.ViewFactory;
