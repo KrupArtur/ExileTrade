@@ -109,6 +109,7 @@ public class QuerySearch {
                                 .flatMap(filter -> filter.getOption().getOptions().stream())
                                 .filter(filterOption -> itemClass.contains(filterOption.getText()))
                                 .map(Options::getId).findFirst().orElse("")).append("\"}");
+                if(query.toString().contains("\"category\":{\"option\":\"\"}")) query = new StringBuilder(query.toString().replace("\"category\":{\"option\":\"\"}", ""));
 
             }
 

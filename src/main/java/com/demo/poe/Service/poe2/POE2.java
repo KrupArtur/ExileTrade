@@ -68,7 +68,7 @@ public class POE2 implements POEApi {
     public void searchItems(Map<String, String> item) {
         String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
         String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
-
+        System.out.println(json);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")

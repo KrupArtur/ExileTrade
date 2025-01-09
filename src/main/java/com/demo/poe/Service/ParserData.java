@@ -14,7 +14,7 @@ public class ParserData {
         List<String> myList = new ArrayList<>();
 
         int i = 0;
-
+        boolean isUnique = ParserData.findNameForFilters(itemData, "Rarity: ").equals("Unique");
         for(String line : lines){
             if(line.contains("----")){
                 i++;
@@ -25,10 +25,10 @@ public class ParserData {
 
             myList.add(line);
             i++;
-            if(i == lines.length - 1 ) li.add(myList);
+            if(i == lines.length - 1) li.add(myList);
         }
       if(li.size() == 0) return null;
-        itemDetails.put("Mods",String.join("\n", li.get(li.size() -1)));
+        itemDetails.put("Mods",String.join("\n", li.get(li.size() - (isUnique ? 2 : 1))));
         return itemDetails;
     }
 

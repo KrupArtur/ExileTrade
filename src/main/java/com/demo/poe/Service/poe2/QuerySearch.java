@@ -108,6 +108,7 @@ public class QuerySearch {
                                 .flatMap(filter -> filter.getOption().getOptions().stream())
                                 .filter(filterOption -> itemClass.contains(filterOption.getText()))
                                 .map(ItemOption::getId).findFirst().orElse("")).append("\"}");
+                if(query.toString().contains(",\"category\":{\"option\":\"\"}")) query = new StringBuilder(query.toString().replace(",\"category\":{\"option\":\"\"}", ""));
 
             }
 
@@ -138,8 +139,10 @@ public class QuerySearch {
             List<String> values = ParserData.getNumberFromText(mod);
             if (values.size() > 1) {
                 return new Mod(ParserData.replaceNumberToHash(mod), values.get(0), values.get(1));
-            } else {
+            } else if( values.size() == 1) {
                 return new Mod(ParserData.replaceNumberToHash(mod), values.get(0));
+            } else {
+                return new Mod(ParserData.replaceNumberToHash(mod));
             }
         }).collect(Collectors.toList());
     }

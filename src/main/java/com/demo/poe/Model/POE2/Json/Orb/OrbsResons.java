@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class OrbsResons {
-    public static double divine = 0;
+    private static final String url = "https://www.pathofexile.com/api/trade2/exchange/poe2/Standard";
     private static long scheduledTime = -1;
+    public static double divine = 0;
 
     public static void getInstance(Label label){
             loadData(label);
@@ -23,11 +24,11 @@ public class OrbsResons {
 
     private static void loadData(Label label) {
          try {
-             if(scheduledTime - System.currentTimeMillis() >= 60000 || divine == 0) {
+             if(scheduledTime - System.currentTimeMillis() >= 90000 || divine == 0) {
                  String query = "{\"query\":{\"status\":{\"option\":\"online\"},\"have\":[\"exalted\"],\"want\":[\"divine\"]},\"sort\":{\"have\":\"asc\"},\"engine\":\"new\"}";
 
                  HttpRequest httpRequest = HttpRequest.newBuilder()
-                         .uri(new URI("https://www.pathofexile.com/api/trade2/exchange/poe2/Standard"))
+                         .uri(new URI(url))
                          .header("Content-Type", "application/json")
                          .POST(HttpRequest.BodyPublishers.ofString(query))
                          .build();
@@ -55,17 +56,17 @@ public class OrbsResons {
         }
     }
 
-    private static Double getPriceOrb(Result result){
+    private static double getPriceOrb(Result result){
         int count = 0;
-        Double avg = 0.0;
+        double avg = 0.0;
         for (String key: result.getResult().keySet()) {
             Orb orb = result.getResult().get(key);
             Listing listing = orb.getListing();
-            List<Offer> offertsList = listing.getOffers();
-            for (Offer offert: offertsList) {
+            List<Offer> offersList = listing.getOffers();
+            for (Offer offers: offersList) {
                 if(count >= 20) break;
 
-                avg += Double.valueOf(offert.getExchange().getAmount() / offert.getItem().getAmount());
+                avg +=  offers.getExchange().getAmount() / offers.getItem().getAmount();
 
                 count++;
             }

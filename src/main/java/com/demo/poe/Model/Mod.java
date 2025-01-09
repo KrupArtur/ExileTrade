@@ -25,6 +25,10 @@ public class Mod {
         this.value = value;
     }
 
+    public Mod(String name) {
+        this.name = name;
+    }
+
     public Mod(String name, String valueMin, String valueMax) {
         this.name = name;
         this.valueMin = valueMin;
