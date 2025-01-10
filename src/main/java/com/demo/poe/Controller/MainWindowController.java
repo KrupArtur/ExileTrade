@@ -98,8 +98,14 @@ public class MainWindowController extends BaseController {
         price.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         iconApplication.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("icon32")))));
-        divineOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("divine")))));
-        exileOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(SettingsManager.getInstance().getSetting("exile")))));
+
+        divineOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(
+                WindowDetector.getGameWindow("Path of Exile") != null ?
+                        SettingsManager.getInstance().getSetting("divinePOE") : SettingsManager.getInstance().getSetting("divine")))));
+        exileOrb.setImage(new Image(Objects.requireNonNull(HelloApplication.class.getResourceAsStream(
+                WindowDetector.getGameWindow("Path of Exile") != null ?
+                        SettingsManager.getInstance().getSetting("exilePOE") :SettingsManager.getInstance().getSetting("exile") ))));
+
         titleApplicationLabel.setText(SettingsManager.getInstance().getSetting("title"));
 
         ScrollBar verticalScrollBar = getVerticalScrollBar();

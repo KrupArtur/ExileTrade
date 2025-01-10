@@ -1,4 +1,4 @@
-package com.demo.poe.Model.POE2.Json.Orb;
+package com.demo.poe.Model.Json.Orb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,21 +14,22 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class OrbsResons {
-    private static final String url = "https://www.pathofexile.com/api/trade2/exchange/poe2/Standard";
+    private static final String urlPOE = "https://www.pathofexile.com/api/trade/exchange/Standard";
+    private static final String urlPOE2 = "https://www.pathofexile.com/api/trade2/exchange/poe2/Standard";
     private static long scheduledTime = -1;
     public static double divine = 0;
 
-    public static void getInstance(Label label){
-            loadData(label);
+    public static void getInstance(Label label,boolean isPOE){
+           // loadData(label, isPOE);
     }
 
-    private static void loadData(Label label) {
+    private static void loadData(Label label, boolean isPOE) {
          try {
-             if(scheduledTime - System.currentTimeMillis() >= 90000 || divine == 0) {
+             if(scheduledTime - System.currentTimeMillis() >= 120000 || divine == 0) {
                  String query = "{\"query\":{\"status\":{\"option\":\"online\"},\"have\":[\"exalted\"],\"want\":[\"divine\"]},\"sort\":{\"have\":\"asc\"},\"engine\":\"new\"}";
 
                  HttpRequest httpRequest = HttpRequest.newBuilder()
-                         .uri(new URI(url))
+                         .uri(new URI(isPOE ? urlPOE : urlPOE2))
                          .header("Content-Type", "application/json")
                          .POST(HttpRequest.BodyPublishers.ofString(query))
                          .build();

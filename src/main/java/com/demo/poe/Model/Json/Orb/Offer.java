@@ -1,4 +1,4 @@
-package com.demo.poe.Model.POE2.Json.Orb;
+package com.demo.poe.Model.Json.Orb;
 
 public class Offer {
     private Exchange exchange;

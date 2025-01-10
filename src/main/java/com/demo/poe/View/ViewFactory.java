@@ -3,11 +3,12 @@ package com.demo.poe.View;
 import com.demo.poe.Controller.OptionsWindowController;
 import com.demo.poe.Service.Events.KeyEventHandler;
 import com.demo.poe.HelloApplication;
-import com.demo.poe.Model.POE2.Json.Orb.OrbsResons;
+import com.demo.poe.Model.Json.Orb.OrbsResons;
 import com.demo.poe.PoeTradeManager;
 import com.demo.poe.Service.SettingsManager;
 import com.demo.poe.Controller.MainWindowController;
 import com.demo.poe.Controller.BaseController;
+import com.demo.poe.Service.WindowDetector;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -77,7 +78,7 @@ public class ViewFactory {
             activeStages.put("MainWindow", stage);
 
             stage.addEventHandler(WindowEvent.WINDOW_SHOWN, event -> {
-                OrbsResons.getInstance(mainWindowController.getPriceDivine());
+                OrbsResons.getInstance(mainWindowController.getPriceDivine(), WindowDetector.getGameWindow("Path of Exile") != null);
             });
 
             try {

@@ -26,10 +26,10 @@
                         <Label fx:id="titleApplicationLabel" alignment="CENTER" prefHeight="32.0" prefWidth="131.0" text="ExileTrader" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="32.0" prefWidth="175.0">
+                  <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="175.0" spacing="5.0">
                      <children>
                         <ImageView fx:id="divineOrb" fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" />
-                        <Label fx:id="priceDivine" alignment="CENTER" prefHeight="25.0" prefWidth="145.0" text="x 1 ⇐ ">
+                        <Label fx:id="priceDivine" alignment="CENTER" prefHeight="25.0" prefWidth="79.0" text="x 1 ⇐ ">
                            <font>
                               <Font size="11.6" />
                            </font>
@@ -104,6 +104,9 @@
                            <font>
                               <Font size="10.0" />
                            </font>
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
                         </Button>
                      </children>
                   </HBox>

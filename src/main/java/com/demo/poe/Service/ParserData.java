@@ -6,30 +6,65 @@ import java.util.regex.Pattern;
 
 public class ParserData {
     public static Map<String, String> parseItemData(String itemData) {
-        Map<String, String> itemDetails = new HashMap<>();
+        Map<String, String> details = new HashMap<>();
+        String[] allLines = itemData.split("\n");
 
-        String[] lines = itemData.split("\n");
-
-        List<List<String>> li = new ArrayList<>();
-        List<String> myList = new ArrayList<>();
+        List<List<String>> partsLine = new ArrayList<>();
+        List<String> part = new ArrayList<>();
 
         int i = 0;
-        boolean isUnique = ParserData.findNameForFilters(itemData, "Rarity: ").equals("Unique");
-        for(String line : lines){
-            if(line.contains("----")){
+        for (String line : allLines) {
+            if (line.contains("----")) {
                 i++;
-                li.add(myList);
-                myList = new ArrayList<>();
+                partsLine.add(part);
+                part = new ArrayList<>();
                 continue;
             }
 
-            myList.add(line);
+            part.add(line);
             i++;
-            if(i == lines.length - 1) li.add(myList);
+            if (i == allLines.length - 1) partsLine.add(part);
         }
-      if(li.size() == 0) return null;
-        itemDetails.put("Mods",String.join("\n", li.get(li.size() - (isUnique ? 2 : 1))));
-        return itemDetails;
+
+        if (partsLine.size() == 0) return null;
+        List<String> mods = partsLine.get(getLevelItemPositionInList(partsLine) + 1);
+        String implicit = null;
+        String rune = null;
+
+        for (String mod : mods) {
+            if (mod.contains("(implicit)")) {
+                implicit = mod;
+            } else if (mod.contains("(rune)")) {
+                rune = mod;
+            }
+        }
+
+        int modsPosition = 1;
+        if(implicit != null) modsPosition++;
+        if(rune != null) modsPosition++;
+
+        details.put("Mods", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+
+        return details;
+    }
+
+    private static int getLevelItemPositionInList(List<List<String>> partsLine){
+        int position = findElemetPosition("Item Level: ", partsLine);
+        if(position == 0) position = findElemetPosition("Stack Size: ", partsLine);
+
+        return position;
+    }
+
+    private static int findElemetPosition(String element, List<List<String>> partsLine){
+        int itemLevelPosition = 0;
+        for (List<String> part : partsLine) {
+            for (String x : part) {
+                if(x.contains(element))
+                    return itemLevelPosition;
+            }
+            itemLevelPosition++;
+        }
+        return 0;
     }
 
     public static String findValueForFilters(String itemData, String filter){
@@ -61,7 +96,7 @@ public class ParserData {
     }
 
     public static String replaceNumberToHash(String text){
-        return text.replaceAll("\\d+", "#").replace("+","");
+        return text.replaceAll("\\d+", "#").replace("#.#", "#").replace("+","");
     }
 
     public static List<String> getNumberFromText(String text){

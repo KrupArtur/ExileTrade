@@ -1,6 +1,5 @@
-package com.demo.poe.Model.POE2.Json.Orb;
+package com.demo.poe.Model.Json.Orb;
 
-import java.util.List;
 import java.util.Map;
 
 public class Result {

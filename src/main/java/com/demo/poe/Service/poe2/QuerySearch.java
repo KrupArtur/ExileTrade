@@ -15,10 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,7 +63,7 @@ public class QuerySearch {
 
         List<Mod> modsWithId = combined.stream()
                 .flatMap(mod -> StaticData.getInstance().getResults().stream()
-                        .flatMap(result -> findIdsByText(result.getEntries(), mod))).toList();
+                        .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList();
 
         StringBuilder query = new StringBuilder();
         query.append("{\"query\":{\"status\":{\"option\":\"online\"},\"stats\":[{\"type\":\"and\",\"filters\":[");
@@ -171,7 +168,7 @@ public class QuerySearch {
         return modArrayList;
     }
 
-    public Stream<Mod> findIdsByText(List<Entry> entries, Mod mod) {
+    public Optional<Mod> findIdsByText(List<Entry> entries, Mod mod) {
         return entries.stream()
                 .filter(entry -> {
                     if (exclusionsItem(entry) && findModInVBox(mod.getName())) {
@@ -194,13 +191,17 @@ public class QuerySearch {
                                     prevent = part;
                                 }
                             } else {
-                                return entry.getText().equals(mod.getName());
+                                if(entry.getText().contains("[") && entry.getText().contains("]") && !element.contains("|"))
+                                    return entry.getText().replace("[","").replace("]","").equals(mod.getName());
+                                else
+                                    return entry.getText().equals(mod.getName());
                             }
                         }
                         return entry.getText().equals(mod.getName());
                     }
                     return false;
                 })
+                .findFirst()
                 .map(entry -> {
                     mod.setId(entry.getId());
                     return mod;
@@ -235,7 +236,8 @@ public class QuerySearch {
                 !entry.getId().contains("implicit") &&
                 !entry.getId().contains("sanctum") &&
                 !entry.getId().contains("rune") &&
-                !entry.getId().equals("explicit.stat_3489782002");
+                !entry.getId().equals("explicit.stat_3489782002") &&
+                entry.getId().contains("explicit.");
     }
 
 }

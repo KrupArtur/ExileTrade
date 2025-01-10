@@ -5,6 +5,8 @@
     "icon32": "icon/icon32.png",
     "title": "ExileTrader",
     "divine": "icon/DivineOrb.png",
-    "exile": "icon/ExaltedOrb.png"
+    "divinePOE": "icon/DivineOrbPOE.png",
+    "exile": "icon/ExaltedOrb.png",
+    "exilePOE": "icon/exaltedOrbPOE.png"
   }
 }
