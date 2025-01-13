@@ -66,7 +66,7 @@ public class POE2 implements POEApi {
 
     @Override
     public void searchItems(Map<String, String> item) {
-        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
+        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQueryForItem(item);
         String url = TRADE_API_BASE_URL + "search/"+ (leagues.isEmpty() ? leagues : "Standard");
         System.out.println(json);
         HttpRequest request = HttpRequest.newBuilder()
@@ -83,6 +83,11 @@ public class POE2 implements POEApi {
 
         resultNotFound.setText("Matched " + ResultForQuery.getInstance().getTotal());
         resultNotFound.setStyle("-fx-font-size: 14px;");
+    }
+
+    @Override
+    public void searchStackItem(Map<String, String> item) {
+        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQueryForStack(item);
     }
 
     private String generateItemsCode(ResultForQuery response) {

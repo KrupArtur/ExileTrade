@@ -234,14 +234,19 @@ public class MainWindowController extends BaseController {
     private void copyToClipboard() {
         try {
             String clipboardContent = ClipboardContent.getClipboardContent();
-            Map<String, String> item = ParserData.parseItemData(clipboardContent);
 
-            assert item != null;
-            assert item.size() != 0;
             if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
                 POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
-                poe2.searchItems(item);
+                if(clipboardContent.contains("Stack Size: ")){
+                    Map<String, String> item = ParserData.parseStackData(clipboardContent);
+                    poe2.searchStackItem(item);
+                } else {
+                    Map<String, String> item = ParserData.parseItemData(clipboardContent);
+                    poe2.searchItems(item);
+                }
+
             } else if(WindowDetector.getGameWindow("Path of Exile") != null){
+                Map<String, String> item = ParserData.parseItemData(clipboardContent);
                 POE poe = new POE(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
                 poe.searchItems(item);
             }
@@ -357,7 +362,7 @@ public class MainWindowController extends BaseController {
         assert item.size() != 0;
 
          if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
-            String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQuery(item);
+            String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQueryForItem(item);
 
             String leagues = Settings.getInstance().get("leaguesPOE2") != null ? Settings.getInstance().get("leaguesPOE2").getValue() : "Standard";
             openWebPage("https://www.pathofexile.com/trade2/search/poe2/"+ leagues+"?q=" + URLEncoderE.encodeUrlFragment(json));

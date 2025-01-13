@@ -7,6 +7,45 @@ import java.util.regex.Pattern;
 public class ParserData {
     public static Map<String, String> parseItemData(String itemData) {
         Map<String, String> details = new HashMap<>();
+
+        List<List<String>> partsLine = getSepareteDate(itemData);
+
+        if (partsLine.size() == 0) return null;
+        List<String> mods = partsLine.get(getLevelItemPositionInList(partsLine) + 1);
+
+        String implicit = null;
+        String rune = null;
+
+        for (String mod : mods) {
+            if (mod.contains("(implicit)")) {
+                implicit = mod;
+            } else if (mod.contains("(rune)")) {
+                rune = mod;
+            }
+        }
+
+        int modsPosition = 1;
+        if(implicit != null) modsPosition++;
+        if(rune != null) modsPosition++;
+
+        details.put("Mods", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+
+        return details;
+    }
+
+    public static Map<String, String> parseStackData(String itemData) {
+        Map<String, String> details = new HashMap<>();
+
+        List<List<String>> partsLine = getSepareteDate(itemData);
+
+        if (partsLine.size() == 0) return null;
+
+        details.put("Mods", String.join("\n", partsLine.get(findElemetPosition("Stack Size: ",partsLine) + 1)));
+
+        return details;
+    }
+
+    public static List<List<String>> getSepareteDate(String itemData){
         String[] allLines = itemData.split("\n");
 
         List<List<String>> partsLine = new ArrayList<>();
@@ -26,26 +65,7 @@ public class ParserData {
             if (i == allLines.length - 1) partsLine.add(part);
         }
 
-        if (partsLine.size() == 0) return null;
-        List<String> mods = partsLine.get(getLevelItemPositionInList(partsLine) + 1);
-        String implicit = null;
-        String rune = null;
-
-        for (String mod : mods) {
-            if (mod.contains("(implicit)")) {
-                implicit = mod;
-            } else if (mod.contains("(rune)")) {
-                rune = mod;
-            }
-        }
-
-        int modsPosition = 1;
-        if(implicit != null) modsPosition++;
-        if(rune != null) modsPosition++;
-
-        details.put("Mods", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
-
-        return details;
+        return partsLine;
     }
 
     private static int getLevelItemPositionInList(List<List<String>> partsLine){

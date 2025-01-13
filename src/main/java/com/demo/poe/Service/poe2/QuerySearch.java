@@ -47,7 +47,7 @@ public class QuerySearch {
     }
 
 
-    public String createQuery(Map<String, String> item) {
+    public String createQueryForItem(Map<String, String> item) {
         int about = isExacteValue ? 1 : (1 - (Integer.parseInt(fillStatAroundPoE)/100));
         List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
         List<Mod> combined = Stream.concat(mods.stream(), getModFromGUI().stream())
@@ -129,6 +129,18 @@ public class QuerySearch {
         query.append("\"sort\":{\"price\":\"asc\"}}");
 
         return query.toString();
+    }
+
+    public String createQueryForStack(Map<String, String> item) {
+        List<Mod> mods = createModsForStack(Arrays.stream(item.get("Mods").split("\n")).toList());
+
+        return "";
+    }
+
+    private List<Mod> createModsForStack(List<String> mods) {
+
+
+        return null;
     }
 
     public List<Mod> createMods(List<String> mods) {

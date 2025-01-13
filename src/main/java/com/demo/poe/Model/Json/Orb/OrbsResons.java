@@ -25,7 +25,7 @@ public class OrbsResons {
 
     private static void loadData(Label label, boolean isPOE) {
          try {
-             if(scheduledTime - System.currentTimeMillis() >= 120000 || divine == 0) {
+             if(scheduledTime - System.currentTimeMillis() >= 240000 || divine == 0) {
                  String query = "{\"query\":{\"status\":{\"option\":\"online\"},\"have\":[\"exalted\"],\"want\":[\"divine\"]},\"sort\":{\"have\":\"asc\"},\"engine\":\"new\"}";
 
                  HttpRequest httpRequest = HttpRequest.newBuilder()

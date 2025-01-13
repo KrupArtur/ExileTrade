@@ -101,6 +101,11 @@ public class POE implements POEApi {
         }
     }
 
+    @Override
+    public void searchStackItem(Map<String, String> item) {
+
+    }
+
     private void processFetchResponse(String responseBody) {
         try {
             JsonNode rootNode = OBJECT_MAPPER.readTree(responseBody);
