@@ -11,7 +11,7 @@ public class ParserData {
         List<List<String>> partsLine = getSepareteDate(itemData);
 
         if (partsLine.size() == 0) return null;
-        List<String> mods = partsLine.get(getLevelItemPositionInList(partsLine) + 1);
+        List<String> mods = partsLine.get(getLevelItemPositionInList(partsLine) + (partsLine.size() == 2 ? 0 : 1));
 
         String implicit = null;
         String rune = null;
@@ -25,10 +25,18 @@ public class ParserData {
         }
 
         int modsPosition = 1;
-        if(implicit != null) modsPosition++;
-        if(rune != null) modsPosition++;
+        if(implicit != null) {
+            details.put("Implicit", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+            modsPosition++;
+        }
 
-        details.put("Mods", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+        if(rune != null){
+            details.put("Rune", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+            modsPosition++;
+        }
+
+        if(partsLine.size() != 2)
+            details.put("Mods", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
 
         return details;
     }

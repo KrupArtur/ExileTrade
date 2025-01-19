@@ -11,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -114,10 +115,54 @@ public class KeyEventHandler implements NativeKeyListener {
     private boolean isCtrlPressed(NativeKeyEvent nativeKeyEvent) {
         return (nativeKeyEvent.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0;
     }
+    private static final int RETRY_LIMIT = 3; // Liczba prób
+    private static final int RETRY_DELAY = 500; // Czas między próbami w ms
 
     private void toggleWindowVisibility() {
         if(!WindowDetector.isPoEActive()) return;
         String newClipbordContent = ClipboardContent.getClipboardContent();
+
+        if(lastClipbordContent.equals(newClipbordContent)){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() {
+                    String initialContent = ClipboardContent.getClipboardContent();
+                    int attempts = 0;
+
+                    while (attempts < RETRY_LIMIT) {
+                        try {
+                            Thread.sleep(RETRY_DELAY);
+                            String currentContent = ClipboardContent.getClipboardContent();
+
+                            if (currentContent != null && !currentContent.equals(initialContent)) {
+                                System.out.println("Clipboard updated: ");
+                                break;
+                            }
+
+                            Robot robot = new Robot();
+                            robot.keyPress(KeyEvent.VK_CONTROL);
+                            robot.keyPress(KeyEvent.VK_C);
+                            robot.delay(10);
+                            robot.keyRelease(KeyEvent.VK_C);
+                            robot.keyRelease(KeyEvent.VK_CONTROL);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (AWTException e) {
+                            e.printStackTrace();
+                        }
+                        attempts++;
+                    }
+
+                    if (attempts == RETRY_LIMIT) {
+                        System.out.println("Failed to retrieve clipboard content after retries.");
+                    }
+
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        }
+
         controller.getVbox().getChildren().clear();
         controller.addMods(controller.getVbox());
         HBox hBox = new HBox();
@@ -136,8 +181,8 @@ public class KeyEventHandler implements NativeKeyListener {
         if (isWindowVisible && newClipbordContent.equals(lastClipbordContent)) {
             controller.setVisibleWindow(false);
             Platform.runLater(primaryStage::hide);
-            lastClipbordContent = "";
             isWindowVisible = false;
+            lastClipbordContent = "";
         } else {
             controller.setVisibleWindow(true);
             lastClipbordContent = newClipbordContent;
@@ -371,10 +416,11 @@ public class KeyEventHandler implements NativeKeyListener {
         newY = Math.max(gameWindowRect.top, Math.min(newY, gameWindowRect.bottom - windowHeight));
         double finalNewX = newX;
         double finalNewY = newY;
+
         Platform.runLater(() -> {
             primaryStage.show();
-            primaryStage.setOpacity(0.9);  // Możesz dostosować widoczność
-            primaryStage.setAlwaysOnTop(true); // Zawsze na wierzchu
+            primaryStage.setOpacity(0.9);
+            primaryStage.setAlwaysOnTop(true);
             primaryStage.setX(finalNewX);
             primaryStage.setY(finalNewY);
         });

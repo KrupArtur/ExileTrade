@@ -237,14 +237,8 @@ public class MainWindowController extends BaseController {
 
             if(WindowDetector.getGameWindow("Path of Exile 2") != null) {
                 POE2 poe2 = new POE2(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
-                if(clipboardContent.contains("Stack Size: ")){
-                    Map<String, String> item = ParserData.parseStackData(clipboardContent);
-                    poe2.searchStackItem(item);
-                } else {
-                    Map<String, String> item = ParserData.parseItemData(clipboardContent);
-                    poe2.searchItems(item);
-                }
-
+                Map<String, String> item = ParserData.parseItemData(clipboardContent);
+                poe2.searchItems(item);
             } else if(WindowDetector.getGameWindow("Path of Exile") != null){
                 Map<String, String> item = ParserData.parseItemData(clipboardContent);
                 POE poe = new POE(table, resultNotFound, itemLevelField, itemQualityField, isCorrupted, mods);
@@ -268,28 +262,20 @@ public class MainWindowController extends BaseController {
         Map<String, String> itemData = ParserData.parseItemData(data);
         itemLevelField.setText(ParserData.findValueForFilters(data, "Item Level: "));
         itemQualityField.setText(ParserData.findValueForFilters(data, "Quality: +"));
-        if(itemData != null) {
-            for (String text : itemData.get("Mods").split("\n")) {
+
+        if(itemData != null && (itemData.containsKey("Implicit"))) {
+            for (String text : itemData.get("Implicit").split("\n")) {
                 vbox.getChildren().add(cretaeHBox(text));
             }
-            return;
         }
-        for(int i = 0 ; i < 3; i++){
-            Robot robot = null;
-            try {
-                robot = new Robot();
-            } catch (AWTException e) {
-                e.printStackTrace();
+
+        if(itemData != null && (itemData.containsKey("Rune"))) {
+            for (String text : itemData.get("Rune").split("\n")) {
+                vbox.getChildren().add(cretaeHBox(text));
             }
-            assert robot != null;
-            robot.keyPress(KeyEvent.VK_CONTROL);
-            robot.keyPress(KeyEvent.VK_C);
-            robot.delay(10);
-            robot.keyRelease(KeyEvent.VK_C);
-            robot.keyRelease(KeyEvent.VK_CONTROL);
         }
-        itemData = ParserData.parseItemData(ClipboardContent.getClipboardContent());
-        if(itemData != null) {
+
+        if(itemData != null && (itemData.containsKey("Mods"))) {
             for (String text : itemData.get("Mods").split("\n")) {
                 vbox.getChildren().add(cretaeHBox(text));
             }

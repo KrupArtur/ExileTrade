@@ -87,7 +87,8 @@ public class POE2 implements POEApi {
 
     @Override
     public void searchStackItem(Map<String, String> item) {
-        String json = QuerySearch.create(mods, itemLevelField, itemQualityField, isCorrupted).createQueryForStack(item);
+
+
     }
 
     private String generateItemsCode(ResultForQuery response) {

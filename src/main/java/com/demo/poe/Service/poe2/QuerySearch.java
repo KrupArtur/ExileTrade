@@ -49,21 +49,43 @@ public class QuerySearch {
 
     public String createQueryForItem(Map<String, String> item) {
         int about = isExacteValue ? 1 : (1 - (Integer.parseInt(fillStatAroundPoE)/100));
-        List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
-        List<Mod> combined = Stream.concat(mods.stream(), getModFromGUI().stream())
-                .filter(mod -> mod.getName() != null && !mod.getName().isEmpty())
-                .collect(Collectors.toMap(
-                        Mod::getName,
-                        Function.identity(),
-                        (mod1, mod2) -> mod1
-                ))
-                .values()
-                .stream()
-                .toList();
+        List<Mod> modsWithId = new ArrayList<>();
 
-        List<Mod> modsWithId = combined.stream()
-                .flatMap(mod -> StaticData.getInstance().getResults().stream()
-                        .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList();
+
+        if(item != null && item.containsKey("Rune")) {
+            List<Mod> mods = createMods(Arrays.stream(item.get("Rune").replace(" (rune)","").split("\n")).toList());
+
+            modsWithId.addAll(mods.stream()
+                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("rune"))
+                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
+        }
+
+        if(item != null && item.containsKey("Implicit")) {
+            List<Mod> mods = createMods(Arrays.stream(item.get("Implicit").replace(" (implicit)","").split("\n")).toList());
+
+            modsWithId.addAll(mods.stream()
+                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("implicit"))
+                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
+        }
+
+
+        if(item != null && item.containsKey("Mods")) {
+            List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
+            List<Mod> combined = Stream.concat(mods.stream(), getModFromGUI().stream())
+                    .filter(mod -> mod.getName() != null && !mod.getName().isEmpty())
+                    .collect(Collectors.toMap(
+                            Mod::getName,
+                            Function.identity(),
+                            (mod1, mod2) -> mod1
+                    ))
+                    .values()
+                    .stream()
+                    .toList();
+
+            modsWithId.addAll(combined.stream()
+                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("explicit"))
+                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
+        }
 
         StringBuilder query = new StringBuilder();
         query.append("{\"query\":{\"status\":{\"option\":\"online\"},\"stats\":[{\"type\":\"and\",\"filters\":[");
@@ -131,18 +153,6 @@ public class QuerySearch {
         return query.toString();
     }
 
-    public String createQueryForStack(Map<String, String> item) {
-        List<Mod> mods = createModsForStack(Arrays.stream(item.get("Mods").split("\n")).toList());
-
-        return "";
-    }
-
-    private List<Mod> createModsForStack(List<String> mods) {
-
-
-        return null;
-    }
-
     public List<Mod> createMods(List<String> mods) {
         return mods.stream().map(mod -> {
             List<String> values = ParserData.getNumberFromText(mod);
@@ -183,30 +193,132 @@ public class QuerySearch {
     public Optional<Mod> findIdsByText(List<Entry> entries, Mod mod) {
         return entries.stream()
                 .filter(entry -> {
-                    if (exclusionsItem(entry) && findModInVBox(mod.getName())) {
+                    if (findModInVBox(mod.getName())) {
                         Pattern pattern = Pattern.compile("\\[([^\\]]+)\\]");
                         Matcher matcher = pattern.matcher(entry.getText());
                         String text = entry.getText();
+                        List<String> preventValue = new ArrayList<>();
+                        List<String> preventValue2 = new ArrayList<>();
+                        List<String> preventValue3 = new ArrayList<>();
+                        List<String> preventValue4 = new ArrayList<>();
+                        boolean isFirstMods = true;
+                        boolean idontknow = true;
+                        boolean nextidontkonw =true;
+                        boolean nextidontkonw2 =true;
                         while (matcher.find()) {
                             String element = matcher.group(1);
                             if (element.contains("|")) {
                                 List<String> parts = Arrays.stream(element.split("\\|")).toList();
                                 String prevent = "";
                                 for (String part : parts) {
-                                    text = text.replace("[" + element + "]", part);
-                                    if (text.equals(mod.getName()) && exclusionsItem(entry)) {
-                                        return true;
+                                    if(isFirstMods) {
+                                        text = entry.getText().replace("[" + element + "]", part);
+                                        if (text.equals(mod.getName())) {
+                                            return true;
+                                        }
+                                        if (text.replace(prevent, part).equals(mod.getName())) {
+                                            return true;
+                                        }
+                                        prevent = part;
+                                        preventValue.add(text);
+                                    } else {
+                                        if(idontknow) {
+                                            for (String string : preventValue) {
+                                                text = string.replace("[" + element + "]", part);
+                                                if (text.equals(mod.getName())) {
+                                                    return true;
+                                                }
+                                                preventValue2.add(text);
+                                                idontknow = false;
+                                            }
+                                        } else if (nextidontkonw) {
+                                            for (String string : preventValue2) {
+                                                text = string.replace("[" + element + "]", part);
+                                                if (text.equals(mod.getName())) {
+                                                    return true;
+                                                }
+                                                preventValue3.add(text);
+                                                nextidontkonw = false;
+                                            }
+                                        } else if (nextidontkonw2) {
+                                            for (String string : preventValue3) {
+                                                text = string.replace("[" + element + "]", part);
+                                                if (text.equals(mod.getName())) {
+                                                    return true;
+                                                }
+                                                preventValue4.add(text);
+                                                nextidontkonw2 = false;
+                                            }
+                                        }
+                                         else {
+                                            for (String string : preventValue4) {
+                                                text = string.replace("[" + element + "]", part);
+                                                if (text.equals(mod.getName())) {
+                                                    return true;
+                                                }
+                                            }
+                                        }
                                     }
-                                    if (text.replace(prevent, part).equals(mod.getName()) && exclusionsItem(entry)) {
-                                        return true;
-                                    }
-                                    prevent = part;
                                 }
+                                if (idontknow) {
+                                    for (String part : parts) {
+                                        for (String string : preventValue) {
+                                            text = string.replace("[" + element + "]", part);
+                                            if (text.equals(mod.getName())) {
+                                                return true;
+                                            }
+                                            preventValue2.add(text);
+                                            idontknow = false;
+                                        }
+                                    }
+                                } else if (nextidontkonw) {
+                                    for (String part : parts) {
+                                        for (String string : preventValue2) {
+                                            text = string.replace("[" + element + "]", part);
+                                            if (text.equals(mod.getName())) {
+                                                return true;
+                                            }
+                                            preventValue3.add(text);
+                                            nextidontkonw = false;
+                                        }
+                                    }
+                                } else if (nextidontkonw2) {
+                                    for (String part : parts) {
+                                        for (String string : preventValue3) {
+                                            text = string.replace("[" + element + "]", part);
+                                            if (text.equals(mod.getName())) {
+                                                return true;
+                                            }
+                                            preventValue4.add(text);
+                                            nextidontkonw2 = false;
+                                        }
+                                    }
+                                } else {
+                                    for (String part : parts) {
+                                        for (String string : preventValue4) {
+                                            text = string.replace("[" + element + "]", part);
+                                            if (text.equals(mod.getName())) {
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                                isFirstMods = false;
                             } else {
-                                if(entry.getText().contains("[") && entry.getText().contains("]") && !element.contains("|"))
+                                for(String string: preventValue){
+                                    if(string.contains("[") && string.contains("]") && !element.contains("|")
+                                         && string.replace("[","").replace("]","").equals(mod.getName())){
+                                       return true;
+                                    }
+                                }
+                                if(entry.getText().contains("[") && entry.getText().contains("]") && !element.contains("|")){
+                                    preventValue.add(entry.getText().replace("[" + element + "]",element));
+                                }
+                                isFirstMods = false;
+                              /*  if(entry.getText().contains("[") && entry.getText().contains("]") && !element.contains("|"))
                                     return entry.getText().replace("[","").replace("]","").equals(mod.getName());
                                 else
-                                    return entry.getText().equals(mod.getName());
+                                    return entry.getText().equals(mod.getName());*/
                             }
                         }
                         return entry.getText().equals(mod.getName());
@@ -230,7 +342,10 @@ public class QuerySearch {
                         checkBoxIsSelect = checkBox.isSelected();
                     }
                     if (element instanceof Label mod) {
-                        if (mod.getText().equals(text)) correctMod = true;
+                        if (mod.getText()
+                                .replace(" (implicit)","")
+                                .replace(" (rune)","")
+                                .equals(text)) correctMod = true;
                     }
                     if (element instanceof ComboBox comboBox) {
                         if (comboBox.getValue().equals(text)) correctMod = true;
