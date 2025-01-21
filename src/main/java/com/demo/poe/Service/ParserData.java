@@ -15,16 +15,27 @@ public class ParserData {
 
         String implicit = null;
         String rune = null;
+        String enchant = null;
 
-        for (String mod : mods) {
-            if (mod.contains("(implicit)")) {
-                implicit = mod;
-            } else if (mod.contains("(rune)")) {
-                rune = mod;
+        for (List<String> first : partsLine) {
+            for(String mod : first) {
+                if (mod.contains("(implicit)")) {
+                    implicit = mod;
+                } else if (mod.contains("(rune)")) {
+                    rune = mod;
+                } else if (mod.contains("(enchant)")) {
+                    enchant = mod;
+                }
             }
         }
 
         int modsPosition = 1;
+
+        if(enchant != null) {
+            details.put("Enchant", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
+            modsPosition++;
+        }
+
         if(implicit != null) {
             details.put("Implicit", String.join("\n", partsLine.get(getLevelItemPositionInList(partsLine) + modsPosition)));
             modsPosition++;

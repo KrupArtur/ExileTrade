@@ -24,7 +24,7 @@ public class StaticData {
     public static StaticData getInstance() {
         if (instance == null) {
             instance = new StaticData();
-            if(!TempFile.fileTempExists(nameFileTemp)){
+           if(!TempFile.fileTempExists(nameFileTemp)){
                 loadDataFromRequest();
             } else {
                 loadDataFromTempFile();

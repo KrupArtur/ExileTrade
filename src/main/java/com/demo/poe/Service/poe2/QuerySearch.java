@@ -68,6 +68,14 @@ public class QuerySearch {
                             .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
         }
 
+        if(item != null && item.containsKey("Enchant")) {
+            List<Mod> mods = createMods(Arrays.stream(item.get("Enchant").replace(" (enchant)","").split("\n")).toList());
+
+            modsWithId.addAll(mods.stream()
+                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("enchant"))
+                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
+        }
+
 
         if(item != null && item.containsKey("Mods")) {
             List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
@@ -345,6 +353,7 @@ public class QuerySearch {
                         if (mod.getText()
                                 .replace(" (implicit)","")
                                 .replace(" (rune)","")
+                                .replace(" (enchant)","")
                                 .equals(text)) correctMod = true;
                     }
                     if (element instanceof ComboBox comboBox) {

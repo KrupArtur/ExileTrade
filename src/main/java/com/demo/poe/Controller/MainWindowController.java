@@ -263,6 +263,12 @@ public class MainWindowController extends BaseController {
         itemLevelField.setText(ParserData.findValueForFilters(data, "Item Level: "));
         itemQualityField.setText(ParserData.findValueForFilters(data, "Quality: +"));
 
+        if(itemData != null && (itemData.containsKey("Enchant"))) {
+            for (String text : itemData.get("Enchant").split("\n")) {
+                vbox.getChildren().add(cretaeHBox(text));
+            }
+        }
+
         if(itemData != null && (itemData.containsKey("Implicit"))) {
             for (String text : itemData.get("Implicit").split("\n")) {
                 vbox.getChildren().add(cretaeHBox(text));
