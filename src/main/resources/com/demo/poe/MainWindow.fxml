@@ -18,7 +18,7 @@
 
 <AnchorPane prefHeight="803.0" prefWidth="388.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane onMouseDragged="#menuDragged" onMousePressed="#menuPressed" prefHeight="42.0" prefWidth="377.0">
+      <BorderPane onMouseDragged="#menuDragged" onMousePressed="#menuPressed" prefHeight="42.0" prefWidth="386.0">
          <left>
             <HBox prefHeight="42.0" prefWidth="325.0" BorderPane.alignment="CENTER">
                <children>
@@ -103,20 +103,16 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="386.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="19.0" prefWidth="386.0">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="414.0">
-                     <children>
-                        <Label fx:id="resultNotFound">
-                           <font>
-                              <Font size="11.5" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
+                  <Label fx:id="resultNotFound">
+                     <font>
+                        <Font size="11.5" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
-            <TableView fx:id="table" editable="true" focusTraversable="false" onScroll="#reloadData" prefHeight="248.0" prefWidth="386.0" stylesheets="@main.css">
+            <TableView fx:id="table" editable="true" focusTraversable="false" onScroll="#reloadData" prefHeight="269.0" prefWidth="386.0" stylesheets="@main.css">
               <columns>
                 <TableColumn fx:id="price" prefWidth="165.0" style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px;" text="Price" />
                 <TableColumn fx:id="lvl" prefWidth="195.0" style="-fx-font-size: 14px; -fx-text-fill: #ecf0f1;" text="Lvl" />

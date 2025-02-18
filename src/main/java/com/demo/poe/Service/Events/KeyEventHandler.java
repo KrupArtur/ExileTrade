@@ -31,13 +31,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KeyEventHandler implements NativeKeyListener {
+
+    private static final Logger logger = Logger.getLogger(KeyEventHandler.class.getName());
+    private static final int RETRY_LIMIT = 3;
+    private static final int RETRY_DELAY = 500;
 
     private Stage primaryStage;
     private MainWindowController controller;
     private boolean isWindowVisible = false;
-    private String lastClipbordContent = "";
+    private String lastClipboardContent = "";
 
     public KeyEventHandler(Stage primaryStage, MainWindowController controller) {
         this.primaryStage = primaryStage;
@@ -50,117 +56,69 @@ public class KeyEventHandler implements NativeKeyListener {
             if (nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_C && isCtrlPressed(nativeKeyEvent)) {
                 Platform.runLater(this::toggleWindowVisibility);
             } else if (nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_D && isCtrlPressed(nativeKeyEvent)) {
-                try {
-                    Robot robot = new Robot();
-                    robot.keyPress(KeyEvent.VK_CONTROL);
-                    robot.keyPress(KeyEvent.VK_C);
-                    robot.delay(100);
-                    robot.keyRelease(KeyEvent.VK_C);
-                    robot.keyRelease(KeyEvent.VK_CONTROL);
-                } catch (AWTException e) {
-                    e.printStackTrace();
-                }
-
+                simulateCtrlC();
             }
             if (nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_F5) {
                 sendHideoutCommand();
             }
         }
     }
-    public static void bringPoE2ToFront() {
-        String windowName = "Path of Exile 2";  // Nazwa okna gry
 
+    private void simulateCtrlC() {
+        try {
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_CONTROL);
+            robot.keyPress(KeyEvent.VK_C);
+            robot.delay(100);
+            robot.keyRelease(KeyEvent.VK_C);
+            robot.keyRelease(KeyEvent.VK_CONTROL);
+        } catch (AWTException e) {
+            logger.log(Level.SEVERE, "Error simulating Ctrl+C", e);
+        }
+    }
+
+    public static void bringPoE2ToFront() {
+        String windowName = "Path of Exile 2";
         User32 user32 = User32.INSTANCE;
         WinDef.HWND hwnd = findWindowByName(windowName);
         if (hwnd != null) {
-            user32.SetForegroundWindow(hwnd);  // Przestawia okno na pierwszy plan
+            user32.SetForegroundWindow(hwnd);
             user32.SetFocus(hwnd);
-            System.out.println(user32.GetForegroundWindow());
+            logger.info("Brought Path of Exile 2 to front");
         } else {
-            System.out.println("Nie znaleziono okna: " + windowName);
+            logger.warning("Window not found: " + windowName);
         }
     }
 
     private static WinDef.HWND findWindowByName(String windowName) {
         User32 user32 = User32.INSTANCE;
-        WinDef.HWND hwnd = user32.FindWindow(null, windowName);  // Znajduje okno po nazwie
-        return hwnd;
+        return user32.FindWindow(null, windowName);
     }
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-        if(WindowDetector.isPoEActive()) {
+        if (WindowDetector.isPoEActive()) {
             if (!isWindowVisible && nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_C && isCtrlPressed(nativeKeyEvent)) {
                 Platform.runLater(this::toggleWindowVisibility);
             } else if (!isWindowVisible && nativeKeyEvent.getKeyCode() == NativeKeyEvent.VC_D && isCtrlPressed(nativeKeyEvent)) {
-                try {
-                    Robot robot = new Robot();
-                    robot.keyPress(KeyEvent.VK_CONTROL);
-                    robot.keyPress(KeyEvent.VK_C);
-                    robot.delay(10);
-                    robot.keyRelease(KeyEvent.VK_C);
-                    robot.keyRelease(KeyEvent.VK_CONTROL);
-                } catch (AWTException e) {
-                    e.printStackTrace();
-                }
+                simulateCtrlC();
             }
         }
     }
 
     @Override
-    public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
-
-    }
+    public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {}
 
     private boolean isCtrlPressed(NativeKeyEvent nativeKeyEvent) {
         return (nativeKeyEvent.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0;
     }
-    private static final int RETRY_LIMIT = 3; // Liczba prób
-    private static final int RETRY_DELAY = 500; // Czas między próbami w ms
 
     private void toggleWindowVisibility() {
-        if(!WindowDetector.isPoEActive()) return;
-        String newClipbordContent = ClipboardContent.getClipboardContent();
+        if (!WindowDetector.isPoEActive()) return;
+        String newClipboardContent = ClipboardContent.getClipboardContent();
 
-        if(lastClipbordContent.equals(newClipbordContent)){
-            Task<Void> task = new Task<>() {
-                @Override
-                protected Void call() {
-                    String initialContent = ClipboardContent.getClipboardContent();
-                    int attempts = 0;
-
-                    while (attempts < RETRY_LIMIT) {
-                        try {
-                            Thread.sleep(RETRY_DELAY);
-                            String currentContent = ClipboardContent.getClipboardContent();
-
-                            if (currentContent != null && !currentContent.equals(initialContent)) {
-                                System.out.println("Clipboard updated: ");
-                                break;
-                            }
-
-                            Robot robot = new Robot();
-                            robot.keyPress(KeyEvent.VK_CONTROL);
-                            robot.keyPress(KeyEvent.VK_C);
-                            robot.delay(10);
-                            robot.keyRelease(KeyEvent.VK_C);
-                            robot.keyRelease(KeyEvent.VK_CONTROL);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (AWTException e) {
-                            e.printStackTrace();
-                        }
-                        attempts++;
-                    }
-
-                    if (attempts == RETRY_LIMIT) {
-                        System.out.println("Failed to retrieve clipboard content after retries.");
-                    }
-
-                    return null;
-                }
-            };
-            new Thread(task).start();
+        if (lastClipboardContent.equals(newClipboardContent)) {
+            retryClipboardUpdate();
         }
 
         controller.getVbox().getChildren().clear();
@@ -168,45 +126,81 @@ public class KeyEventHandler implements NativeKeyListener {
         HBox hBox = new HBox();
         hBox.getChildren().add(createButtonToAddMods());
         hBox.setAlignment(Pos.CENTER_RIGHT);
-        hBox.setPadding(new Insets(5,5,5,5));
+        hBox.setPadding(new Insets(5, 5, 5, 5));
         controller.getVbox().getChildren().add(hBox);
 
         Button button = findButtonAddMods(controller.getVbox());
-
-        if(sizeChildHbox(controller.getVbox()) > 8 && button != null){
+        if (sizeChildHbox(controller.getVbox()) > 12 && button != null) {
             button.setDisable(true);
         }
         controller.clearTable();
 
-        if (isWindowVisible && newClipbordContent.equals(lastClipbordContent)) {
+        if (isWindowVisible && newClipboardContent.equals(lastClipboardContent)) {
             controller.setVisibleWindow(false);
             Platform.runLater(primaryStage::hide);
             isWindowVisible = false;
-            lastClipbordContent = "";
+            lastClipboardContent = "";
         } else {
             controller.setVisibleWindow(true);
-            lastClipbordContent = newClipbordContent;
+            lastClipboardContent = newClipboardContent;
             showWindowAtCursor();
             isWindowVisible = true;
         }
     }
 
-    public int sizeChildHbox(VBox vBox){
-        int i = 0;
-        for (var node:vBox.getChildren()) {
-            if(node instanceof HBox hBox){
-                i++;
+    private void retryClipboardUpdate() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                String initialContent = ClipboardContent.getClipboardContent();
+                int attempts = 0;
+
+                while (attempts < RETRY_LIMIT) {
+                    try {
+                        if (!WindowDetector.isPoEActive()) return null;
+
+                        Thread.sleep(RETRY_DELAY);
+                        String currentContent = ClipboardContent.getClipboardContent();
+
+                        if (currentContent != null && !currentContent.equals(initialContent)) {
+                            logger.info("Clipboard updated");
+                            break;
+                        }
+
+                        simulateCtrlC();
+                    } catch (InterruptedException e) {
+                        logger.log(Level.SEVERE, "Error during clipboard update retry", e);
+                    }
+                    attempts++;
+                }
+
+                if (attempts == RETRY_LIMIT) {
+                    logger.warning("Failed to retrieve clipboard content after retries");
+                }
+
+                return null;
             }
-        }
-        return i;
+        };
+        new Thread(task).start();
     }
 
-    public Button findButtonAddMods(VBox vBox){
-        for (var node:vBox.getChildren()) {
-            if(node instanceof HBox hBox){
-                for (var children :hBox.getChildren()) {
-                    if(children instanceof Button button)
+    public int sizeChildHbox(VBox vBox) {
+        int count = 0;
+        for (var node : vBox.getChildren()) {
+            if (node instanceof HBox) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public Button findButtonAddMods(VBox vBox) {
+        for (var node : vBox.getChildren()) {
+            if (node instanceof HBox hBox) {
+                for (var children : hBox.getChildren()) {
+                    if (children instanceof Button button) {
                         return button;
+                    }
                 }
             }
         }
@@ -325,7 +319,7 @@ public class KeyEventHandler implements NativeKeyListener {
 
             Button button = findButtonAddMods(controller.getVbox());
 
-            if(sizeChildHbox(controller.getVbox()) > 8 && button != null){
+            if(sizeChildHbox(controller.getVbox()) > 12 && button != null){
                 button.setDisable(true);
             }
 
@@ -398,21 +392,18 @@ public class KeyEventHandler implements NativeKeyListener {
 
     private void showWindowAtCursor() {
         WinDef.POINT p = new WinDef.POINT();
-
         User32.INSTANCE.GetCursorPos(p);
         double windowWidth = primaryStage.getWidth();
         double windowHeight = primaryStage.getHeight();
 
         WinDef.RECT gameWindowRect = WindowDetector.getGameWindow("Path of Exile 2");
-        if(gameWindowRect == null ) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
-        if(gameWindowRect == null) return;
+        if (gameWindowRect == null) gameWindowRect = WindowDetector.getGameWindow("Path of Exile");
+        if (gameWindowRect == null) return;
+
         double newX = p.x - windowWidth - 10;
         double newY = p.y + 10;
 
-        assert gameWindowRect != null;
         newX = Math.max(gameWindowRect.left, Math.min(newX, gameWindowRect.right - windowWidth));
-
-
         newY = Math.max(gameWindowRect.top, Math.min(newY, gameWindowRect.bottom - windowHeight));
         double finalNewX = newX;
         double finalNewY = newY;

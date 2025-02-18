@@ -52,18 +52,6 @@ public class ParserData {
         return details;
     }
 
-    public static Map<String, String> parseStackData(String itemData) {
-        Map<String, String> details = new HashMap<>();
-
-        List<List<String>> partsLine = getSepareteDate(itemData);
-
-        if (partsLine.size() == 0) return null;
-
-        details.put("Mods", String.join("\n", partsLine.get(findElemetPosition("Stack Size: ",partsLine) + 1)));
-
-        return details;
-    }
-
     public static List<List<String>> getSepareteDate(String itemData){
         String[] allLines = itemData.split("\n");
 

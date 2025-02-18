@@ -1,6 +1,5 @@
 package com.demo.poe.Model.POE.Json.Filters;
 
-import com.demo.poe.Model.POE.Json.Stats.StatsRespons;
 import com.demo.poe.Service.TempFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +11,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FiltersRespons {
     private static FiltersRespons instance;
     private static final String nameFileTemp = "filterResponseTempPOE.json";
+    private static final Logger logger = Logger.getLogger(FiltersRespons.class.getName());
 
     List<Result> result;
 
@@ -26,7 +28,6 @@ public class FiltersRespons {
             } else {
                 loadDataFromTempFile();
             }
-
         } 
         return instance;        
     }
@@ -44,22 +45,29 @@ public class FiltersRespons {
                         try {
                             ObjectMapper objectMapper = new ObjectMapper();
                             instance = objectMapper.readValue(body, FiltersRespons.class);
-                            TempFile.saveTempFile(nameFileTemp,body);
-                        }catch (Exception e){
-                            e.printStackTrace();
+                            TempFile.saveTempFile(nameFileTemp, body);
+                            logger.info("Data loaded from request and saved to temp file");
+                        } catch (JsonProcessingException e) {
+                            logger.log(Level.SEVERE, "Error processing JSON response", e);
                         }
+                    })
+                    .exceptionally(ex -> {
+                        logger.log(Level.SEVERE, "Error during HTTP request", ex);
+                        return null;
                     });
+            response.join();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Invalid URI", e);
         }
     }
 
-    public static void loadDataFromTempFile(){
+    public static void loadDataFromTempFile() {
         try {
             ObjectMapper mapper = new ObjectMapper();
             instance = mapper.readValue(TempFile.readTempFile(nameFileTemp), FiltersRespons.class);
+            logger.info("Data loaded from temp file");
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error processing JSON from temp file", e);
         }
     }
 

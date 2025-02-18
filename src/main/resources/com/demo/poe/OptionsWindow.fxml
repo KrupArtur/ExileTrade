@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="492.0" prefWidth="398.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="492.0" prefWidth="399.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane onMouseDragged="#menuDragged" onMousePressed="#menuPressed" prefHeight="25.0" prefWidth="400.0">
+      <BorderPane onMouseDragged="#menuDragged" onMousePressed="#menuPressed" prefHeight="42.0" prefWidth="376.0">
          <right>
             <Button mnemonicParsing="false" onAction="#closeBtn" prefHeight="38.0" prefWidth="49.0" text="X" BorderPane.alignment="CENTER">
                <font>
@@ -37,9 +37,9 @@
             </HBox>
          </left>
       </BorderPane>
-      <TabPane fx:id="tabPane" layoutX="2.0" layoutY="44.0" prefHeight="439.0" prefWidth="398.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabPane" layoutX="2.0" layoutY="44.0" prefHeight="439.0" prefWidth="388.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-            <Tab text="Standard">
+            <Tab text="PoE">
                <content>
                   <VBox>
                      <children>
@@ -47,18 +47,6 @@
                            <children>
                               <VBox prefHeight="308.0" prefWidth="197.0">
                                  <children>
-                                    <HBox prefHeight="37.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" prefHeight="45.0" prefWidth="197.0" text="PoE" textAlignment="CENTER">
-                                             <font>
-                                                <Font size="24.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                          </Label>
-                                       </children>
-                                    </HBox>
                                     <ComboBox fx:id="leaguesPOE" prefHeight="28.0" prefWidth="192.0" promptText="Leagues">
                                        <VBox.margin>
                                           <Insets bottom="15.0" />
@@ -74,39 +62,6 @@
                                              </HBox.margin>
                                           </Label>
                                           <CheckBox fx:id="exactValuePoE" mnemonicParsing="false" text="Exact Value" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                              <VBox layoutX="10.0" layoutY="10.0" prefHeight="405.0" prefWidth="203.0">
-                                 <children>
-                                    <HBox prefHeight="37.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" prefHeight="26.0" prefWidth="201.0" text="PoE 2" textAlignment="CENTER">
-                                             <font>
-                                                <Font size="24.0" />
-                                             </font>
-                                          </Label>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <ComboBox fx:id="leaguesPOE2" prefHeight="28.0" prefWidth="192.0" promptText="Leagues">
-                                       <VBox.margin>
-                                          <Insets bottom="15.0" />
-                                       </VBox.margin></ComboBox>
-                                    <Label text="Fill stat values" />
-                                    <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="196.0">
-                                       <children>
-                                          <Label text="±" />
-                                          <TextField fx:id="fillStatAroundPoE2" prefHeight="32.0" prefWidth="37.0" text="10" />
-                                          <Label text="\%">
-                                             <HBox.margin>
-                                                <Insets right="10.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <CheckBox fx:id="exactValuePoE2" mnemonicParsing="false" text="Exact Value" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -130,11 +85,41 @@
                   </VBox>
                </content>
             </Tab>
-          <Tab text="Short cut">
+          <Tab text="PoE2">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="398.0">
+                        <VBox prefHeight="405.0" prefWidth="203.0">
+                           <children>
+                              <ComboBox fx:id="leaguesPOE2" prefHeight="28.0" prefWidth="192.0" promptText="Leagues">
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </ComboBox>
+                              <Label text="Fill stat values" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="196.0">
+                                 <children>
+                                    <Label text="±" />
+                                    <TextField fx:id="fillStatAroundPoE2" prefHeight="32.0" prefWidth="37.0" text="10" />
+                                    <Label text="\%">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <CheckBox fx:id="exactValuePoE2" mnemonicParsing="false" text="Exact Value" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+               </content>
+          </Tab>
+          <Tab text="Shortcut">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="157.0" prefHeight="48.0" prefWidth="241.0">
                            <children>
                               <Label text="/hideout">
                                  <HBox.margin>
@@ -148,7 +133,7 @@
                               </TextField>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="398.0">
+                        <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="398.0">
                            <children>
                               <Label text="/exit">
                                  <HBox.margin>
@@ -162,13 +147,7 @@
                               </TextField>
                            </children>
                         </HBox>
-                     </children>
-                  </VBox>
-               </content>
-          </Tab>
-          <Tab disable="true" text="Logs">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </children></AnchorPane>
             </content>
           </Tab>
         </tabs>

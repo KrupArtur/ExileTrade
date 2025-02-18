@@ -46,36 +46,12 @@ public class QuerySearch {
         return new QuerySearch(mods, itemLevelField, itemQualityField, isCorrupted);
     }
 
-
     public String createQueryForItem(Map<String, String> item) {
-        int about = isExacteValue ? 1 : (1 - (Integer.parseInt(fillStatAroundPoE)/100));
         List<Mod> modsWithId = new ArrayList<>();
 
-
-        if(item != null && item.containsKey("Rune")) {
-            List<Mod> mods = createMods(Arrays.stream(item.get("Rune").replace(" (rune)","").split("\n")).toList());
-
-            modsWithId.addAll(mods.stream()
-                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("rune"))
-                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
-        }
-
-        if(item != null && item.containsKey("Implicit")) {
-            List<Mod> mods = createMods(Arrays.stream(item.get("Implicit").replace(" (implicit)","").split("\n")).toList());
-
-            modsWithId.addAll(mods.stream()
-                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("implicit"))
-                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
-        }
-
-        if(item != null && item.containsKey("Enchant")) {
-            List<Mod> mods = createMods(Arrays.stream(item.get("Enchant").replace(" (enchant)","").split("\n")).toList());
-
-            modsWithId.addAll(mods.stream()
-                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals("enchant"))
-                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
-        }
-
+        additionalMods(item, modsWithId, "Rune");
+        additionalMods(item, modsWithId, "Implicit");
+        additionalMods(item, modsWithId, "Enchant");
 
         if(item != null && item.containsKey("Mods")) {
             List<Mod> mods = createMods(Arrays.stream(item.get("Mods").split("\n")).toList());
@@ -95,7 +71,14 @@ public class QuerySearch {
                             .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
         }
 
+        return buildQuery(modsWithId).toString();
+    }
+
+    private StringBuilder buildQuery(List<Mod> modsWithId){
         StringBuilder query = new StringBuilder();
+        int about = isExacteValue ? 1 : (1 - (Integer.parseInt(fillStatAroundPoE)/100));
+
+
         query.append("{\"query\":{\"status\":{\"option\":\"online\"},\"stats\":[{\"type\":\"and\",\"filters\":[");
 
         for (int i = 0; i < modsWithId.size(); i++) {
@@ -110,6 +93,7 @@ public class QuerySearch {
 
             if (i < modsWithId.size() - 1) query.append(",");
         }
+
         String itemClass = ParserData.findNameForFilters(ClipboardContent.getClipboardContent(), "Item Class: ");
         boolean isItemLevelOrQualityOrCorrupted = false;
         if((itemLevelField.getText() != null && !itemLevelField.getText().isEmpty()) ||
@@ -157,8 +141,17 @@ public class QuerySearch {
         }
 
         query.append("\"sort\":{\"price\":\"asc\"}}");
+        return query;
+    }
 
-        return query.toString();
+    public void additionalMods(Map<String, String> item, List<Mod> modsWithId, String name){
+        if(item != null && item.containsKey(name)) {
+            List<Mod> mods = createMods(Arrays.stream(item.get(name).replace(" ("+ name.toLowerCase() +")","").split("\n")).toList());
+
+            modsWithId.addAll(mods.stream()
+                    .flatMap(mod -> StaticData.getInstance().getResults().stream().filter(x -> x.getId().equals(name.toLowerCase()))
+                            .flatMap(result -> findIdsByText(result.getEntries(), mod).stream())).toList());
+        }
     }
 
     public List<Mod> createMods(List<String> mods) {
@@ -357,7 +350,7 @@ public class QuerySearch {
                                 .equals(text)) correctMod = true;
                     }
                     if (element instanceof ComboBox comboBox) {
-                        if (comboBox.getValue().equals(text)) correctMod = true;
+                        if (comboBox.getValue() != null && comboBox.getValue().equals(text)) correctMod = true;
                     }
 
                     if (checkBoxIsSelect && correctMod) return true;
@@ -366,14 +359,4 @@ public class QuerySearch {
         }
         return false;
     }
-
-    public boolean exclusionsItem(Entry entry) {
-        return !entry.getId().contains("enchant") &&
-                !entry.getId().contains("implicit") &&
-                !entry.getId().contains("sanctum") &&
-                !entry.getId().contains("rune") &&
-                !entry.getId().equals("explicit.stat_3489782002") &&
-                entry.getId().contains("explicit.");
-    }
-
 }

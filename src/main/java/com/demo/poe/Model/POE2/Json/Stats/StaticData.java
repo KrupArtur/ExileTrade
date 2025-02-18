@@ -11,10 +11,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StaticData {
     private static StaticData instance;
     private static final String nameFileTemp = "staticDataTempPOE2.json";
+    private static final Logger logger = Logger.getLogger(StaticData.class.getName());
 
     @JsonProperty("result")
     private List<StaticDataResult> results;
@@ -59,25 +62,29 @@ public class StaticData {
                         try {
                             ObjectMapper mapper = new ObjectMapper();
                             instance = mapper.readValue(body, StaticData.class);
-                            TempFile.saveTempFile(nameFileTemp,body);
+                            TempFile.saveTempFile(nameFileTemp, body);
+                            logger.info("Data loaded from request and saved to temp file");
                         } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                            logger.log(Level.SEVERE, "Error processing JSON response", e);
                         }
                     })
-                    .exceptionally( ex ->{
-                        System.err.println(ex);
+                    .exceptionally(ex -> {
+                        logger.log(Level.SEVERE, "Error during HTTP request", ex);
                         return null;
                     });
+            response.join();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Invalid URI", e);
         }
     }
-    public static void loadDataFromTempFile(){
+
+    public static void loadDataFromTempFile() {
         try {
             ObjectMapper mapper = new ObjectMapper();
             instance = mapper.readValue(TempFile.readTempFile(nameFileTemp), StaticData.class);
+            logger.info("Data loaded from temp file");
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error processing JSON from temp file", e);
         }
     }
 
